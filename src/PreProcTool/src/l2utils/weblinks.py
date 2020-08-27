@@ -71,6 +71,6 @@ class Weblinks(object):
                 logWeblinks.info('Copy index.html - completed')
 
         except Exception as e:
-            print 'Exception@weblinks.addWeblinks:', e
+            print('Exception@weblinks.addWeblinks:', e)
             logging.error('Exception@weblinks.addWeblinks'.format(e))
             sys.exit()
