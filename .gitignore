@@ -22,3 +22,5 @@ src/PreProcTool/test/sample_output*
 
 
 
+/.project
+/.pydevproject

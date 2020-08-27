@@ -135,14 +135,14 @@ class OutputWorker(object):
             j=json.dumps(scenariosDictToJson, sort_keys=True, indent=2)
             f=open(os.path.normpath(
                 self.CONFIG['PROJECT']['OUTPUT_DIR'] + '/landisdata/metadata/metadata.scenarios.json'), 'w')
-            print >> f, j
+            print(j, file=f)
             f.close()
 
             extensionOutputDictToJson=self.PROJECT.getExtensionOutputDict()
             j=json.dumps(extensionOutputDictToJson, sort_keys=True, indent=2)
             f=open(os.path.normpath(
                 self.CONFIG['PROJECT']['OUTPUT_DIR'] + '/landisdata/metadata/metadata.extensions.json'), 'w')
-            print >> f, j
+            print(j, file=f) 
             f.close()
         except Exception as e:
             logSaveMetadata.error('{}'.format(e))

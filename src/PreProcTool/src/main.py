@@ -62,8 +62,8 @@ def main(script, *args):
         appPath, appFile = os.path.split(os.path.normpath(os.path.realpath(script)))
         #appPath, appFile = os.path.split(os.path.normpath(os.path.realpath(__file__)))
         appPath = module_locator.module_path()
-        print appPath
-        print appFile
+        print(appPath)
+        print(appFile)
 
         if not os.path.isdir(appPath+'\logs'):
             os.mkdir(appPath+'\logs')
@@ -84,6 +84,8 @@ def main(script, *args):
 
         # parse commandline arguments
         args = parseArguemnts()
+        print(args)
+        print(type)
 
        
         # LANDIS PreProc Collector: collects Project Configuration and Project Data

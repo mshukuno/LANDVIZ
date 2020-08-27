@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 
 import sys, os, shutil, math, logging
-import l2data as landis, l2utils as utils
-import tilertools
+import l2utils as utils
+# import tilertools
 import json, time
-
+from osgeo.scripts import gdal2tiles
+# from tilertools.map2gdal import options 
+# from argparse import Namespace
+import subprocess
 class PreWorker(object):
     """
     - Assign Spatial Reference To Maps
@@ -42,9 +45,10 @@ class PreWorker(object):
         try:
             minZoom = self.PROJECT.zoomMin
             maxZoom = self.PROJECT.zoomMax
-            z = self.PROJECT.getZoomString()
-
-            print(z)
+            gdal2tilespy = os.path.join(self.CONFIG['APPLICATION']['PATH'], 'tiler/gdal2tiles.py')
+#             z = self.PROJECT.getZoomString()
+# 
+#             print(z)
 
             logPrepairMaps = logging.getLogger('preworker.prepairMaps')
             logPrepairMaps.info('Start prepairing Map Output')
@@ -66,26 +70,35 @@ class PreWorker(object):
                                 #print rasterMapAtYear
                                 if os.path.isfile(rasterMapAtYear):
 
-                                    tempPath = os.path.join(self.CONFIG['PROJECT']['OUTPUT_DIR'], 'landisdata', 'modeldata', str(s.scenarioIndex), str(e.extensionIndex), str(o.outputIndex)) + "\\" + str(year) + ".png"
-                                    tempPathConcat.append(tempPath)
+                                    tempPath = os.path.join(self.CONFIG['PROJECT']['OUTPUT_DIR'], 'landisdata', 'modeldata', str(s.scenarioIndex), str(e.extensionIndex), str(o.outputIndex)) + "\\" + str(year) + ".tif"
+                                    
                                     mw = utils.MapWorker(self.PROJECT.spatialReferenceWKT, self.PROJECT.geoExtent, o.dataType)
                                     logPrepairMaps.info('prepair year = {}'.format(year))
                                     stats = mw.process(rasterMapAtYear, tempPath)
-                                    #print stats
-                                    o.addStats(year, stats)
-
-                                    tilesOutputDirTT = os.path.join(self.CONFIG['PROJECT']['OUTPUT_DIR'], 'landisdata', 'modeldata', str(s.scenarioIndex), str(e.extensionIndex), str(o.outputIndex))
-                  
+                                    print(stats)
+                                    if stats:
+                                        tempPathConcat.append(tempPath)
+                                        o.addStats(year, stats)    
+                                        tilesOutputDirTT = os.path.join(self.CONFIG['PROJECT']['OUTPUT_DIR'], 'landisdata', 'modeldata', str(s.scenarioIndex), str(e.extensionIndex), str(o.outputIndex), str(year))
+                                        
+                                        # TODO: np_process number needs to by sys.argv
+                                        subprocess.call(f'python.exe {gdal2tilespy} {tempPath} {tilesOutputDirTT} --xyz -z {minZoom}-{maxZoom} -w  none --processes 6 -e')
+                                      
+                                    else:
+                                        logPrepairMaps.info('prepair year = {} [year 0 values - map tiles not created]'.format(year))
+                                                                                
                                 else:
                                     #rasterMapAtYear not exists ... data replacement?
                                     logPrepairMaps.info('prepair year = {} [year not available]'.format(year))
+                                    
                             #tiling mit tilertools                            
-                            tiling = tilertools.GdalTiler(['-s', '-p', 'xyz', '-z', z, '-t', tilesOutputDirTT] + tempPathConcat)
+#                             tiling = tilertools.GdalTiler(['-s', '-p', 'xyz', '-z', z, '-t', tilesOutputDirTT] + tempPathConcat)
+                            
 
                             #delete tiling input
                             for temp in tempPathConcat:
                                 os.remove(temp)
-                                os.remove(temp+".aux.xml")
+#                                 os.remove(temp+".aux.xml")
 
                             #print "STATS for ", o.outputName, o.getStats()
                             #statsDictToJson = {}
@@ -113,7 +126,8 @@ class PreWorker(object):
 
                             j = json.dumps(statsDictToJson, sort_keys=True, indent=2)
                             f = open(os.path.normpath(os.path.join(self.CONFIG['PROJECT']['OUTPUT_DIR'], 'landisdata', 'modeldata', str(s.scenarioIndex), str(e.extensionIndex), str(o.outputIndex)) + '\metadata.stats.json'), 'w')
-                            print >> f, j
+#                             print >> f, j
+                            print(j, file=f)
                             f.close()
             end = time.time()
             logPrepairMaps.info('End prepairing Map Output [time: {} sec]'.format(end - start))
@@ -229,7 +243,7 @@ class PreWorker(object):
             rightClassSize = round(float(rightRange/(classCount/2))/operator)*operator
 
             classification['classes'].append(legendMiddle);
-            for i in range((classCount/2)-1):
+            for i in range(math.trunc((classCount/2)-1)):
                 val = classification['classes'][len(classification['classes'])-1] + rightClassSize
                 operator = self.getOperator(val)
                 legendVal = round(float(val)/operator)*operator
@@ -242,8 +256,9 @@ class PreWorker(object):
             # print leftRange, classCount/2.0
             operator = self.getOperator(leftRange/(classCount/2.0))
             leftClassSize = round(float(leftRange/(classCount/2.0))/operator)*operator
+            print()
 
-            for i in range((classCount/2)-1):
+            for i in range(math.trunc((classCount/2)-1)):
                 val = classification['classes'][len(classification['classes'])-1] - leftClassSize
                 operator = self.getOperator(val)
                 legendVal = round(float(val)/operator)*operator

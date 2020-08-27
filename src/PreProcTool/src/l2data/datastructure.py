@@ -364,7 +364,7 @@ class Scenario(object):
             self.__extensions = []
 
         except Exception as e:
-            print "Exception@Datastructure.Scenario.init:", e
+            print("Exception@Datastructure.Scenario.init:", e)
             logging.error("Exception@Datastructure.Scenario.init: {}".format(e))
             sys.exit()
         
@@ -562,7 +562,7 @@ class MapOutput(Output):
                 stats['middle'] /= len(self.__statistics);
             return stats
         except Exception as e:
-            print "Exception@datastructure:getOverallstats", e
+            print("Exception@datastructure:getOverallstats", e)
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             print(exc_type, fname, exc_tb.tb_lineno)

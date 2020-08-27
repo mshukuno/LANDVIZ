@@ -26,7 +26,7 @@ class Collector(object):
             # get project title
             xpath = CONFIG['XPATH']['PROJECTNAME']
             attrib = CONFIG['ATTRIB']['PROJECTNAME']
-            print xpath, attrib
+            print(xpath, attrib)
             xmlQuery = self.projectFileXML.queryXML(xpath, attrib)
 
             # create project object
@@ -135,7 +135,7 @@ class Collector(object):
 
             # load YAML CONFIG File
             with open(os.path.join(appPath, configYaml), 'r') as f:
-                self.CONFIG = yaml.load(f)
+                self.CONFIG = yaml.load(f, Loader=yaml.FullLoader)
 
             # add Application-Path to CONFIG
             self.CONFIG['APPLICATION']['PATH'] = appPath

@@ -16,10 +16,16 @@ class MapWorker(object):
     def process(self, in_fn, out_fn):
         #Open Map
         self.openInputDataset(in_fn)
-        # Create OutputDataset and get Stats
-        statistics = self.createOutputDataset()
-        # Export OutputDataset to PNG
-        self.exportToPng(self.out_ds, out_fn)
+
+        if self.in_min == 0 and self.in_max == 0:
+            print('The values are all 0s')
+            statistics = None
+        else:
+            # Create OutputDataset and get Stats
+            statistics = self.createOutputDataset()
+            # Export OutputDataset to PNG
+            self.exportToGtiff(self.out_ds, out_fn)
+#         self.exportToGtiff(self.out_ds, out_fn)
 
         self.in_ds = None
         self.out_ds = None
@@ -184,7 +190,7 @@ class MapWorker(object):
 
         except Exception as e:
             logCreateOutDS.error('{}'.format(e))
-
+            print(sys.exc_info())
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             logCreateOutDS.debug(exc_type, fname, exc_tb.tb_lineno)
@@ -198,4 +204,13 @@ class MapWorker(object):
         export_ds = driver.CreateCopy(out_fn, ds)
         export_ds.SetProjection(ds.GetProjectionRef())
         export_ds.SetGeoTransform(ds.GetGeoTransform())
-        export_ds = None 
+        export_ds = None
+        
+    def exportToGtiff(self, ds, out_fn):    
+        format = "Gtiff"
+        driver = gdal.GetDriverByName( format )
+        export_ds = driver.CreateCopy(out_fn, ds)
+        export_ds.SetProjection(ds.GetProjectionRef())
+        export_ds.SetGeoTransform(ds.GetGeoTransform())
+        export_ds = None
+     
