@@ -43,7 +43,7 @@ def parseArguemnts():
     # Argument Parser
 
     parser = argparse.ArgumentParser(description='Landis2Vis')
-
+    
     # projectfile Option
     parser.add_argument("-p", "--projectfile", 
         dest="projectFile", required=True, type=extantFile,
@@ -52,6 +52,10 @@ def parseArguemnts():
     parser.add_argument("-o", "--outputfolder",
         dest="outputFolder", required=True, type=extantFolder,
         help="Pre-Proc-Project Output Folder", metavar="FOLDER")
+    
+    parser.add_argument("--processes", required=False, dest="nb_processes", type=int,
+        help="""gdal2tiles input: Number of parallel processes to 
+        use for tiling, to speed-up the computation.""")
 
     return parser.parse_args()
 

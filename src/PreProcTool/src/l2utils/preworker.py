@@ -82,7 +82,7 @@ class PreWorker(object):
                                         tilesOutputDirTT = os.path.join(self.CONFIG['PROJECT']['OUTPUT_DIR'], 'landisdata', 'modeldata', str(s.scenarioIndex), str(e.extensionIndex), str(o.outputIndex), str(year))
                                         
                                         # TODO: np_process number needs to by sys.argv
-                                        subprocess.call(f'python.exe {gdal2tilespy} {tempPath} {tilesOutputDirTT} --xyz -z {minZoom}-{maxZoom} -w  none --processes 6 -e')
+                                        subprocess.call(f'python.exe {gdal2tilespy} {tempPath} {tilesOutputDirTT} --xyz -z {minZoom}-{maxZoom} -w  none --processes {self.CONFIG["NBPROCESSES"]["THREADS"]}')
                                       
                                     else:
                                         logPrepairMaps.info('prepair year = {} [year 0 values - map tiles not created]'.format(year))

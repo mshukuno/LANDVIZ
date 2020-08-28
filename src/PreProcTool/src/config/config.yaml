@@ -51,4 +51,7 @@ ATTRIB:
     CSVFILEPATH: filePath
 
 DEFAULT:
-    PROJECTTITLE: LANDIS-II-Visualization 
+    PROJECTTITLE: LANDIS-II-Visualization
+    
+NBPROCESSES:
+    THREADS: 1

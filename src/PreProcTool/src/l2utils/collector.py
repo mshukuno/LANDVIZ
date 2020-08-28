@@ -148,7 +148,9 @@ class Collector(object):
 
             self.CONFIG['PROJECT']['OUTPUT_DIR'] = args.outputFolder # output Folder
             logSetupConfig.debug('Detect Output Folder: {}'.format(os.path.abspath(self.CONFIG['PROJECT']['OUTPUT_DIR'])))
-
+            
+            if args.nb_processes:
+                self.CONFIG['NBPROCESSES']['THREADS'] =args.nb_processes
             return self.CONFIG
         except Exception as e:
             logSetupConfig.error('{}'.format(e))
