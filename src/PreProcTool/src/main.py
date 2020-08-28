@@ -10,9 +10,8 @@ import logging
 import argparse
 import l2data as landis, l2utils as utils
 import time
-
 from multiprocessing import freeze_support
-
+# from l2utils.preprocess import PreProcess
 
 def extantFolder(x):
     """
@@ -52,9 +51,18 @@ def parseArguemnts():
         dest="projectFile", required=True, type=extantFile,
         help="Pre-Proc-Project File", metavar="FILE") 
     parserMerge.add_argument("-f", "--outputfile",
-        dest="outputFile", required=True, type=str,
+        dest="configFile", required=True, type=str,
         help="Merged XML Configuration Output XML File Name", metavar="FILE NAME")
     
+    parserUpdate = subparsers.add_parser("update", 
+        help="Update metadataXML according configuration XML file created by merge")
+    parserUpdate.add_argument("-p", "--projectfile", 
+        dest="projectFile", required=True, type=extantFile,
+        help="Pre-Proc-Project File", metavar="FILE")
+    parserUpdate.add_argument("-f", "--inputfile",
+        dest="configFile", required=True, type=str,
+        help="Merged XML Configuration input XML File Name", metavar="FILE NAME")
+        
     parserPreproc = subparsers.add_parser ("preproc", 
         help = "Run the PreProc tool")
     parserPreproc.add_argument("-p", "--projectfile", 
@@ -100,11 +108,20 @@ def main(script, *args):
 
         # parse commandline arguments
         args = parseArguemnts()
-        print(args.command)
+        print(args)
         
         if args.command == 'merge':
-            preprocess = utils.PreMerge(appPath, 'config\config.yaml', args)
+            preprocess = utils.PreProcess(appPath, 'config\config.yaml', args)
             preprocess.mergeXMLs()
+            sys.exit()
+        elif args.command == 'update':
+            preprocess = utils.PreProcess(appPath, 'config\config.yaml', args)
+            preprocess.updateXMLs()
+            sys.exit()
+            
+            
+#             preprocess = utils.PreConf(appPath, 'config\config.yaml', args)
+#             preprocess.updateXMLs(appPath, 'config\config.yaml', args)
             sys.exit()
         elif args.command == 'preproc':
             print(args)
