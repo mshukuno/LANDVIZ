@@ -81,7 +81,6 @@ class PreWorker(object):
                                         o.addStats(year, stats)    
                                         tilesOutputDirTT = os.path.join(self.CONFIG['PROJECT']['OUTPUT_DIR'], 'landisdata', 'modeldata', str(s.scenarioIndex), str(e.extensionIndex), str(o.outputIndex), str(year))
                                         
-                                        # TODO: np_process number needs to by sys.argv
                                         subprocess.call(f'python.exe {gdal2tilespy} {tempPath} {tilesOutputDirTT} --xyz -z {minZoom}-{maxZoom} -w  none --processes {self.CONFIG["NBPROCESSES"]["THREADS"]}')
                                       
                                     else:

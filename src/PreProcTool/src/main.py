@@ -44,16 +44,28 @@ def parseArguemnts():
 
     parser = argparse.ArgumentParser(description='Landis2Vis')
     
-    # projectfile Option
-    parser.add_argument("-p", "--projectfile", 
+    subparsers = parser.add_subparsers(title="actions", dest="command")
+    
+    parserMerge = subparsers.add_parser ("merge", 
+        help = "Merge metadata XML configurations into one XML file")
+    parserMerge.add_argument("-p", "--projectfile", 
+        dest="projectFile", required=True, type=extantFile,
+        help="Pre-Proc-Project File", metavar="FILE") 
+    parserMerge.add_argument("-f", "--outputfile",
+        dest="outputFile", required=True, type=str,
+        help="Merged XML Configuration Output XML File Name", metavar="FILE NAME")
+    
+    parserPreproc = subparsers.add_parser ("preproc", 
+        help = "Run the PreProc tool")
+    parserPreproc.add_argument("-p", "--projectfile", 
         dest="projectFile", required=True, type=extantFile,
         help="Pre-Proc-Project File", metavar="FILE")    
 
-    parser.add_argument("-o", "--outputfolder",
+    parserPreproc.add_argument("-o", "--outputfolder",
         dest="outputFolder", required=True, type=extantFolder,
         help="Pre-Proc-Project Output Folder", metavar="FOLDER")
     
-    parser.add_argument("--processes", required=False, dest="nb_processes", type=int,
+    parserPreproc.add_argument("--processes", required=False, dest="nb_processes", type=int,
         help="""gdal2tiles input: Number of parallel processes to 
         use for tiling, to speed-up the computation.""")
 
@@ -88,32 +100,37 @@ def main(script, *args):
 
         # parse commandline arguments
         args = parseArguemnts()
-        print(args)
-        print(type)
-
+        print(args.command)
+        
+        if args.command == 'merge':
+            preprocess = utils.PreMerge(appPath, 'config\config.yaml', args)
+            preprocess.mergeXMLs()
+            sys.exit()
+        elif args.command == 'preproc':
+            print(args)
        
-        # LANDIS PreProc Collector: collects Project Configuration and Project Data
-        collector = utils.Collector()
-        # CONFIG Object has different Configurations
-        CONFIG = collector.setupConfig(appPath, appFile, 'config\config.yaml', args)
-        # PROJECT stores the complete Project (Infos aboute the Project/Scenarios/Extensions/Outputs)
-        PROJECT = collector.setupProject()
-        
-        # LANDIS Preworker: prepair Tables and Maps
-        preworker = utils.PreWorker(PROJECT, CONFIG)
-
-        outputworker = utils.OutputWorker(PROJECT, CONFIG)
-        outputworker.generateOutputDirs()
-        
-        preworker.prepairTables()
-        preworker.prepairMaps()
-
-        outputworker.saveMetadataJson()
-        outputworker.copyWebbase()
-        outputworker.updateWebsettings()
-        # outputworker.zipOutputDir()
-
-        logMain.info('End of LANDIS-II PreProcTool.')
+            # LANDIS PreProc Collector: collects Project Configuration and Project Data
+            collector = utils.Collector()
+            # CONFIG Object has different Configurations
+            CONFIG = collector.setupConfig(appPath, appFile, 'config\config.yaml', args)
+            # PROJECT stores the complete Project (Infos aboute the Project/Scenarios/Extensions/Outputs)
+            PROJECT = collector.setupProject()
+            
+            # LANDIS Preworker: prepair Tables and Maps
+            preworker = utils.PreWorker(PROJECT, CONFIG)
+    
+            outputworker = utils.OutputWorker(PROJECT, CONFIG)
+            outputworker.generateOutputDirs()
+            
+            preworker.prepairTables()
+            preworker.prepairMaps()
+    
+            outputworker.saveMetadataJson()
+            outputworker.copyWebbase()
+            outputworker.updateWebsettings()
+            # outputworker.zipOutputDir()
+    
+            logMain.info('End of LANDIS-II PreProcTool.')
 
     except Exception as e:
         logMain.error('Failed to run LANDIS-II PreProcTool')
