@@ -26,7 +26,7 @@ class Collector(object):
             # get project title
             xpath = CONFIG['XPATH']['PROJECTNAME']
             attrib = CONFIG['ATTRIB']['PROJECTNAME']
-            print(xpath, attrib)
+#             print(xpath, attrib)
             xmlQuery = self.projectFileXML.queryXML(xpath, attrib)
 
             # create project object

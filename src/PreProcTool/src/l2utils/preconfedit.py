@@ -24,7 +24,7 @@ class PreProcess(object):
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         logObj.debug(f'{exc_type}::{fname}::{exc_tb.tb_lineno}')
-        print(f'{exc_type}::{fname}::{exc_tb.tb_lineno}')
+#         print(f'{exc_type}::{fname}::{exc_tb.tb_lineno}')
         sys.exit()
     
         
@@ -111,7 +111,6 @@ class PreProcess(object):
             logGetProjectXml.info(f'[{totalXmlCounter}] XML files merged')                 
             logGetProjectXml.info('Merge complete')
             logGetProjectXml.info('\nEND LANDIS-II PreProcTool')
-            
         
         except Exception as e:
             self.errorLogging(logGetProjectXml, e)
@@ -150,17 +149,14 @@ class PreProcess(object):
             projectScenarios = self.getProjectXml(self.projectFile)
             
             projectFileBase = os.path.dirname(self.projectFile)
-            print(projectFileBase)
+#             print(projectFileBase)
             configXml = os.path.join(projectFileBase, self.configFile)
             tree = etree.parse(configXml, parser).getroot() 
             
             if self.checkConfigXml(tree):
-                print('true')
                 diffCounter = 0
             # ForEach 'Scenario' tag
             for scenario in tree.findall(XML_META_WRAPPER_TAG):
-                print(XML_META_WRAPPER_TAG) 
-                print(type(scenario))
                 # Get 'name' attribute text
                 if scenario.attrib.has_key(ATTRIB_NAME):
                     scenarioName = scenario.attrib[ATTRIB_NAME]
@@ -172,7 +168,7 @@ class PreProcess(object):
                 # IF 'Scenario' tag has 'name' and 'xmlPath' attributes
                 if len(scenarioName) > 0 and len(xmlPath) > 0:
                     if scenarioName in projectScenarios:
-                        print(scenarioName, xmlPath)
+#                         print(scenarioName, xmlPath)
                         # Get original XML file
                         xmlFile = f'{projectFileBase}\{scenarioName}\{xmlPath}'
                         # Parse target XML file

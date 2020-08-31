@@ -80,7 +80,7 @@ class PreWorker(object):
                                         tempPathConcat.append(tempPath)
                                         o.addStats(year, stats)    
                                         tilesOutputDirTT = os.path.join(self.CONFIG['PROJECT']['OUTPUT_DIR'], 'landisdata', 'modeldata', str(s.scenarioIndex), str(e.extensionIndex), str(o.outputIndex), str(year))
-                                        
+                                        # gdal2tiles 
                                         subprocess.call(f'python.exe {gdal2tilespy} {tempPath} {tilesOutputDirTT} --xyz -z {minZoom}-{maxZoom} -w  none --processes {self.CONFIG["NBPROCESSES"]["THREADS"]}')
                                       
                                     else:
@@ -255,7 +255,7 @@ class PreWorker(object):
             # print leftRange, classCount/2.0
             operator = self.getOperator(leftRange/(classCount/2.0))
             leftClassSize = round(float(leftRange/(classCount/2.0))/operator)*operator
-            print()
+#             print()
 
             for i in range(math.trunc((classCount/2)-1)):
                 val = classification['classes'][len(classification['classes'])-1] - leftClassSize

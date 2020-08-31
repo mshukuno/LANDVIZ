@@ -4,6 +4,10 @@
 # PreProc Tool
 # (c) 2014, Johannes Liem, Oregon State University
 
+# Updates
+# 08/31/2020
+# Makiko Shukunobe, Center for Geospatial Analitics, North Carolina State University
+
 import sys, os.path
 import module_locator
 import logging
@@ -86,8 +90,8 @@ def main(script, *args):
         appPath, appFile = os.path.split(os.path.normpath(os.path.realpath(script)))
         #appPath, appFile = os.path.split(os.path.normpath(os.path.realpath(__file__)))
         appPath = module_locator.module_path()
-        print(appPath)
-        print(appFile)
+#         print(appPath)
+#         print(appFile)
 
         if not os.path.isdir(appPath+'\logs'):
             os.mkdir(appPath+'\logs')
@@ -108,7 +112,6 @@ def main(script, *args):
 
         # parse commandline arguments
         args = parseArguemnts()
-        print(args)
         
         if args.command == 'merge':
             preprocess = utils.PreProcess(appPath, 'config\config.yaml', args)
@@ -119,13 +122,7 @@ def main(script, *args):
             preprocess.updateXMLs()
             sys.exit()
             
-            
-#             preprocess = utils.PreConf(appPath, 'config\config.yaml', args)
-#             preprocess.updateXMLs(appPath, 'config\config.yaml', args)
-            sys.exit()
         elif args.command == 'preproc':
-            print(args)
-       
             # LANDIS PreProc Collector: collects Project Configuration and Project Data
             collector = utils.Collector()
             # CONFIG Object has different Configurations
