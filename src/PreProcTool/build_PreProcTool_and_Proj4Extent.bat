@@ -3,7 +3,7 @@ echo ==============================
 echo build PreProcTool
 echo ==============================
 echo run pyinstaller ...
-pyinstaller PreProcTool.spec %*
+pyinstaller   PreProcTool.spec %*
 :--log-level=WARN
 :--distpath=..\dist
 echo ==============================

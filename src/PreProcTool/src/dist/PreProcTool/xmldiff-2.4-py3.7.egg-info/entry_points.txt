@@ -1,0 +1,4 @@
+[console_scripts]
+xmldiff = xmldiff.main:diff_command
+xmlpatch = xmldiff.main:patch_command
+

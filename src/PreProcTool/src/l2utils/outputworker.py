@@ -10,7 +10,9 @@ import zipfile
 from osgeo import ogr
 from osgeo import osr
 
-import l2utils as utils
+# import l2utils as utils
+from l2utils.weblinks import Weblinks
+
 
 
 class OutputWorker(object):
@@ -26,20 +28,17 @@ class OutputWorker(object):
             logCopyWebbase = logging.getLogger('output.copyWebbase')
             logCopyWebbase.info('Copy webbase to output directory')
 
-            excEnv = os.path.splitext(self.CONFIG['APPLICATION']['FILE'])[1]
-            # http://stackoverflow.com/questions/15034151/copy-directory-contents-into-a-directory-with-python
-  
-            
-            if(excEnv == '.py'):
-                #distutils.dir_util.copy_tree("..\\..\\WebVisTool\\build\\dist", self.CONFIG['PROJECT']['OUTPUT_DIR'])
-                # 01/10/2018
-                templatePath = os.path.normpath(os.path.join(self.CONFIG['APPLICATION']['PATH'], '..\\..\\WebVisTool\\build\\dist'))
-                distutils.dir_util.copy_tree(templatePath, self.CONFIG['PROJECT']['OUTPUT_DIR'])
-                utils.Weblinks(self.CONFIG['PROJECT']['INPUT_XML'], templatePath, self.CONFIG['PROJECT']['OUTPUT_DIR'])
-            else:
+            excEnv = os.path.basename(sys.executable)
+
+            if excEnv == 'PreProcTool.exe':
                 distutils.dir_util.copy_tree(
                     self.CONFIG['APPLICATION']['PATH'] + "\webbase", self.CONFIG['PROJECT']['OUTPUT_DIR'])
-                utils.Weblinks(self.CONFIG['PROJECT']['INPUT_XML'], os.path.join(self.CONFIG['APPLICATION']['PATH'], 'webbase'), self.CONFIG['PROJECT']['OUTPUT_DIR'])
+                Weblinks(self.CONFIG['PROJECT']['INPUT_XML'], os.path.join(self.CONFIG['APPLICATION']['PATH'], 'webbase'), self.CONFIG['PROJECT']['OUTPUT_DIR'])
+            else:
+                templatePath = os.path.normpath(os.path.join(self.CONFIG['APPLICATION']['PATH'], '..\\..\\WebVisTool\\build\\dist'))
+                distutils.dir_util.copy_tree(templatePath, self.CONFIG['PROJECT']['OUTPUT_DIR'])
+                Weblinks(self.CONFIG['PROJECT']['INPUT_XML'], templatePath, self.CONFIG['PROJECT']['OUTPUT_DIR'])
+
 
         except Exception as e:
             logCopyWebbase.error('{}'.format(e))
@@ -132,18 +131,20 @@ class OutputWorker(object):
 
             scenariosDictToJson={}
             scenariosDictToJson['scenarios']=self.PROJECT.getScenarioDict()
-            j=json.dumps(scenariosDictToJson, sort_keys=True, indent=2)
-            f=open(os.path.normpath(
-                self.CONFIG['PROJECT']['OUTPUT_DIR'] + '/landisdata/metadata/metadata.scenarios.json'), 'w')
-            print(j, file=f)
-            f.close()
+#             j=json.dumps(scenariosDictToJson, sort_keys=True, indent=2)
+            with open(os.path.normpath(
+                self.CONFIG['PROJECT']['OUTPUT_DIR'] + '/landisdata/metadata/metadata.scenarios.json'), 'w') as f:
+                f.write(json.dumps(scenariosDictToJson, sort_keys=True, indent=2))
+#             print(j, file=f)
+
 
             extensionOutputDictToJson=self.PROJECT.getExtensionOutputDict()
-            j=json.dumps(extensionOutputDictToJson, sort_keys=True, indent=2)
-            f=open(os.path.normpath(
-                self.CONFIG['PROJECT']['OUTPUT_DIR'] + '/landisdata/metadata/metadata.extensions.json'), 'w')
-            print(j, file=f) 
-            f.close()
+#             j=json.dumps(extensionOutputDictToJson, sort_keys=True, indent=2)
+            with open(os.path.normpath(
+                self.CONFIG['PROJECT']['OUTPUT_DIR'] + '/landisdata/metadata/metadata.extensions.json'), 'w') as f:
+                f.write(json.dumps(extensionOutputDictToJson, sort_keys=True, indent=2))
+#             print(j, file=f) 
+#             f.close()
         except Exception as e:
             logSaveMetadata.error('{}'.format(e))
 

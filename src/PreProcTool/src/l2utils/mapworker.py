@@ -24,8 +24,7 @@ class MapWorker(object):
             # Create OutputDataset and get Stats
             statistics = self.createOutputDataset()
             # Export OutputDataset to PNG
-            self.exportToGtiff(self.out_ds, out_fn)
-#         self.exportToGtiff(self.out_ds, out_fn)
+            self.exportToPng(self.out_ds, out_fn)
 
         self.in_ds = None
         self.out_ds = None
@@ -205,12 +204,5 @@ class MapWorker(object):
         export_ds.SetProjection(ds.GetProjectionRef())
         export_ds.SetGeoTransform(ds.GetGeoTransform())
         export_ds = None
-        
-    def exportToGtiff(self, ds, out_fn):    
-        format = "Gtiff"
-        driver = gdal.GetDriverByName( format )
-        export_ds = driver.CreateCopy(out_fn, ds)
-        export_ds.SetProjection(ds.GetProjectionRef())
-        export_ds.SetGeoTransform(ds.GetGeoTransform())
-        export_ds = None
+
      

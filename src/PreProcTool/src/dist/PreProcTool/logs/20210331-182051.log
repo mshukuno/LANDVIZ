@@ -1,0 +1,6 @@
+03/31/2021 06:20:51 PM landis.main               INFO     Start LANDIS-II PreProcTool
+03/31/2021 06:20:51 PM metadata_mod.get_project_xml INFO     [1] scenario
+03/31/2021 06:20:51 PM preprocess.updateXMLs     INFO     
+[1] updates on                                 \Metadata\Base Wind\Base Wind.xml
+03/31/2021 06:20:51 PM preprocess.updateXMLs     INFO     1: UpdateAttrib(node='/landisMetadata/extension/outputs/output[2]', name='visualize', value='False')
+03/31/2021 06:20:51 PM preprocess.updateXMLs     INFO     END

@@ -12,7 +12,7 @@ import logging
 from lxml import etree
 from bs4 import BeautifulSoup
 
-class Weblinks(object):
+class Weblinks():
     def __init__(self, xmlF, appPath, outPath):
         self.__htmlTemplateF = os.path.join(appPath, 'template\\template.html')
         self.__xmlF = xmlF

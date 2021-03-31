@@ -11,7 +11,7 @@ class XMLreader(object):
 
             #parse xml file
             self.__xmlTree = etree.parse(xmlFile)
-            print(xmlFile)
+#             print(xmlFile)
 
             if xsdFile is not None:
                 #parse xsd file IF is there

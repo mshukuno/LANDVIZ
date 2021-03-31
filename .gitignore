@@ -1,10 +1,12 @@
 ###############
 # PreProcTool #
 ###############
+/example/*
 src/PreProcTool/build
 src/PreProcTool/dist
 src/PreProcTool/Proj4Extent.spec
 src/PreProcTool/src/logs
+
 
 ###############
 # WebVizTool #
@@ -15,11 +17,12 @@ src/WebVizTool/localenv/start-landis-vis-local.spec
 # Testings #
 ###########
 
-src/PreProcTool/test/sample_output*
-
+/test/*
+__pycache__/
+/.idea/*
 *.pyc
 .vscode
-
+.*
 
 
 /.project

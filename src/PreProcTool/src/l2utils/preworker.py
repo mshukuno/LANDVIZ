@@ -1,23 +1,34 @@
 #!/usr/bin/env python
 
-import sys, os, shutil, math, logging
-import l2utils as utils
-# import tilertools
-import json, time
-from osgeo.scripts import gdal2tiles
-# from tilertools.map2gdal import options 
-# from argparse import Namespace
-import subprocess
+# Modified
+# 08/31/2020
+# Makiko Shukunobe, Center for Geospatial Analytics, North Carolina State University
+
+import sys
+import os
+import shutil
+import math
+import logging
+import time
+# import l2utils as utils
+from l2utils.mapworker import MapWorker
+import json
+from tilertools import gdal_tiler
+
+
 class PreWorker(object):
     """
     - Assign Spatial Reference To Maps
     - Assign NoDataValue To Maps
     - get MinMax Values Over Time
     """
-    def __init__(self, PROJECT, CONFIG): 
+
+    def __init__(self, PROJECT, CONFIG):
         self.PROJECT = PROJECT
         self.CONFIG = CONFIG
-        
+
+        self.out_json = []
+
     def prepairTables(self):
         try:
             logPrepairTables = logging.getLogger('preworker.prepairTables')
@@ -28,7 +39,9 @@ class PreWorker(object):
                     for o in e:
                         if o.outputType == "Table":
                             src = o.csvFilePath
-                            dst = os.path.join(self.CONFIG['PROJECT']['OUTPUT_DIR'], 'landisdata', 'modeldata', str(s.scenarioIndex), str(e.extensionIndex), str(o.outputIndex)) + "\\" +str(o.outputIndex) + ".csv"
+                            dst = os.path.join(self.CONFIG['PROJECT']['OUTPUT_DIR'], 'landisdata', 'modeldata',
+                                               str(s.scenarioIndex), str(e.extensionIndex),
+                                               str(o.outputIndex)) + "\\" + str(o.outputIndex) + ".csv"
                             shutil.copyfile(src, dst)
             end = time.time()
             logPrepairTables.info('End prepairing Table Output [time: {} sec]'.format(end - start))
@@ -43,13 +56,11 @@ class PreWorker(object):
 
     def prepairMaps(self):
         try:
+
             minZoom = self.PROJECT.zoomMin
             maxZoom = self.PROJECT.zoomMax
-            gdal2tilespy = os.path.join(self.CONFIG['APPLICATION']['PATH'], 'tiler/gdal2tiles.py')
-#             z = self.PROJECT.getZoomString()
-# 
-#             print(z)
-
+            z = self.PROJECT.getZoomString()
+            print(z)
             logPrepairMaps = logging.getLogger('preworker.prepairMaps')
             logPrepairMaps.info('Start prepairing Map Output')
 
@@ -58,76 +69,87 @@ class PreWorker(object):
             for s in self.PROJECT:
                 for e in s:
                     for o in e:
+
                         if o.outputType == "Map":
                             logPrepairMaps.info('scenario: {}'.format(s.scenarioName))
                             logPrepairMaps.info('extension: {}'.format(e.extensionName))
                             logPrepairMaps.info('output: {}'.format(o.outputName))
-            
-                            #FIXME: year 0 ??? s.timeMin + e.timeInterval
+
+                            # FIXME: year 0 ??? s.timeMin + e.timeInterval
                             tempPathConcat = list()
                             for year in range(s.timeMin, s.timeMax + e.timeInterval, e.timeInterval):
                                 rasterMapAtYear = os.path.normpath(self.getFilePath(o.filePathTemplate, str(year)))
-                                #print rasterMapAtYear
+                                # print rasterMapAtYear
                                 if os.path.isfile(rasterMapAtYear):
 
-                                    tempPath = os.path.join(self.CONFIG['PROJECT']['OUTPUT_DIR'], 'landisdata', 'modeldata', str(s.scenarioIndex), str(e.extensionIndex), str(o.outputIndex)) + "\\" + str(year) + ".tif"
-                                    
-                                    mw = utils.MapWorker(self.PROJECT.spatialReferenceWKT, self.PROJECT.geoExtent, o.dataType)
+                                    tempPath = os.path.join(self.CONFIG['PROJECT']['OUTPUT_DIR'], 'landisdata',
+                                                            'modeldata', str(s.scenarioIndex), str(e.extensionIndex),
+                                                            str(o.outputIndex)) + "\\" + str(year) + ".png"
+
+                                    mw = MapWorker(self.PROJECT.spatialReferenceWKT, self.PROJECT.geoExtent, o.dataType)
                                     logPrepairMaps.info('prepair year = {}'.format(year))
                                     stats = mw.process(rasterMapAtYear, tempPath)
-                                    print(stats)
+                                    #                                     print(stats)
                                     if stats:
                                         tempPathConcat.append(tempPath)
-                                        o.addStats(year, stats)    
-                                        tilesOutputDirTT = os.path.join(self.CONFIG['PROJECT']['OUTPUT_DIR'], 'landisdata', 'modeldata', str(s.scenarioIndex), str(e.extensionIndex), str(o.outputIndex), str(year))
-                                        # gdal2tiles 
-                                        subprocess.call(f'python.exe {gdal2tilespy} {tempPath} {tilesOutputDirTT} --xyz -z {minZoom}-{maxZoom} -w  none --processes {self.CONFIG["NBPROCESSES"]["THREADS"]}')
-                                      
+                                        o.addStats(year, stats)
+                                        tilesOutputDirTT = os.path.join(self.CONFIG['PROJECT']['OUTPUT_DIR'],
+                                                                        'landisdata', 'modeldata', str(s.scenarioIndex),
+                                                                        str(e.extensionIndex), str(o.outputIndex))
                                     else:
-                                        logPrepairMaps.info('prepair year = {} [year 0 values - map tiles not created]'.format(year))
-                                                                                
+                                        logPrepairMaps.info(
+                                            'prepair year = {} [year 0 values - map tiles not created]'.format(year))
+
                                 else:
-                                    #rasterMapAtYear not exists ... data replacement?
+                                    # rasterMapAtYear not exists ... data replacement?
                                     logPrepairMaps.info('prepair year = {} [year not available]'.format(year))
-                                    
-                            #tiling mit tilertools                            
-#                             tiling = tilertools.GdalTiler(['-s', '-p', 'xyz', '-z', z, '-t', tilesOutputDirTT] + tempPathConcat)
-                            
 
-                            #delete tiling input
-                            for temp in tempPathConcat:
-                                os.remove(temp)
-#                                 os.remove(temp+".aux.xml")
+                            tiling = gdal_tiler.GdalTiler(
+                                ['-s', '-p', 'xyz', '-z', z, '-t', tilesOutputDirTT] + tempPathConcat)
 
-                            #print "STATS for ", o.outputName, o.getStats()
-                            #statsDictToJson = {}
-                            #statsDictToJson['byYear'] = dict(o.getStats())
+                            # delete tiling input
+                            # for temp in tempPathConcat:
+                            #     os.remove(temp)
+                            #     os.remove(temp+".aux.xml")
+
+                            # print "STATS for ", o.outputName, o.getStats()
+                            # statsDictToJson = {}
+                            # statsDictToJson['byYear'] = dict(o.getStats())
                             overallTimeStats = {}
                             overallTimeStats = o.getOverallStats()
-                            
+
                             if o.dataType == 'nominal':
-                                classification = self.createNominalClassification(overallTimeStats['minMaxMasked'][0], overallTimeStats['minMaxMasked'][1], overallTimeStats['middle'], o.dataType)
+                                classification = self.createNominalClassification(overallTimeStats['minMaxMasked'][0],
+                                                                                  overallTimeStats['minMaxMasked'][1],
+                                                                                  overallTimeStats['middle'],
+                                                                                  o.dataType)
                                 classification['classes'] = overallTimeStats['uniqueValsMaksed']
                             elif o.dataType == 'ordinal':
-                                classification = self.createOrdinalClassification(overallTimeStats['minMaxMasked'][0], overallTimeStats['minMaxMasked'][1], overallTimeStats['middle'], o.dataType)
+                                classification = self.createOrdinalClassification(overallTimeStats['minMaxMasked'][0],
+                                                                                  overallTimeStats['minMaxMasked'][1],
+                                                                                  overallTimeStats['middle'],
+                                                                                  o.dataType)
                             elif o.dataType == 'continuous':
-                                classification = self.createContinuousClassification(overallTimeStats['minMaxMasked'][0], overallTimeStats['minMaxMasked'][1], overallTimeStats['middle'], o.dataType)
-
+                                classification = self.createContinuousClassification(
+                                    overallTimeStats['minMaxMasked'][0], overallTimeStats['minMaxMasked'][1],
+                                    overallTimeStats['middle'], o.dataType)
 
                             statsDictToJson = {}
-                            #if o.dataType == 'continuous':
+                            # if o.dataType == 'continuous':
                             statsDictToJson['classification'] = classification
                             statsDictToJson['overTime'] = overallTimeStats
-                            #statsDictToJson['byTime'] = o.getStats()
+                            # statsDictToJson['byTime'] = o.getStats()
 
                             # print statsDictToJson
                             # print statsDictToJson
 
-                            j = json.dumps(statsDictToJson, sort_keys=True, indent=2)
-                            f = open(os.path.normpath(os.path.join(self.CONFIG['PROJECT']['OUTPUT_DIR'], 'landisdata', 'modeldata', str(s.scenarioIndex), str(e.extensionIndex), str(o.outputIndex)) + '\metadata.stats.json'), 'w')
-#                             print >> f, j
-                            print(j, file=f)
-                            f.close()
+                            with open(os.path.normpath(
+                                    os.path.join(self.CONFIG['PROJECT']['OUTPUT_DIR'], 'landisdata', 'modeldata',
+                                                 str(s.scenarioIndex), str(e.extensionIndex),
+                                                 str(o.outputIndex)) + '\metadata.stats.json'), 'w') as f:
+                                f.write(json.dumps(statsDictToJson, sort_keys=True, indent=2))
+
+            #                             print(j, file=f)
             end = time.time()
             logPrepairMaps.info('End prepairing Map Output [time: {} sec]'.format(end - start))
         except Exception as e:
@@ -146,7 +168,7 @@ class PreWorker(object):
 
             classification = {}
             classification['drawReverse'] = False
-                       
+
             classification['legendMin'] = min
             classification['legendMax'] = max
             classification['legendMiddle'] = middle
@@ -183,7 +205,7 @@ class PreWorker(object):
             classification['legendMax'] = max
             classification['legendMiddle'] = middle
             classification['classes'] = []
-            for i in range(min,max+1):
+            for i in range(min, max + 1):
                 classification['classes'].append(i)
 
             return classification
@@ -197,10 +219,10 @@ class PreWorker(object):
             sys.exit()
 
     def createContinuousClassification(self, min, max, middle, scaleType):
-            # FIXME: classcount not fixed (from input file)
+        # FIXME: classcount not fixed (from input file)
         try:
             logContinuous = logging.getLogger('preworker.continuousClass')
-            classCount =  self.PROJECT.initClassCount + 1;
+            classCount = self.PROJECT.initClassCount + 1
             classification = {}
             classification['drawReverse'] = False
 
@@ -216,12 +238,12 @@ class PreWorker(object):
             operatorMin = self.getOperator(min)
             operatorMax = self.getOperator(max)
             operatorMiddle = math.trunc(math.log10(math.fabs(middle)))
-               
-            #if math.log(math.abs(min)):
- 
-            legendMin = math.floor(float(min)/operatorMin)*operatorMin
-            legendMax = math.ceil(float(max)/operatorMax)*operatorMax
-            legendMiddle = round(float(middle)/operatorMax)*operatorMax
+
+            # if math.log(math.abs(min)):
+
+            legendMin = math.floor(float(min) / operatorMin) * operatorMin
+            legendMax = math.ceil(float(max) / operatorMax) * operatorMax
+            legendMiddle = round(float(middle) / operatorMax) * operatorMax
 
             if legendMin == 0:
                 legendMin = 1
@@ -238,34 +260,34 @@ class PreWorker(object):
             classification['classes'] = []
 
             rightRange = legendMax - legendMiddle
-            operator = self.getOperator(rightRange/(classCount/2))
-            rightClassSize = round(float(rightRange/(classCount/2))/operator)*operator
+            operator = self.getOperator(rightRange / (classCount / 2))
+            rightClassSize = round(float(rightRange / (classCount / 2)) / operator) * operator
 
-            classification['classes'].append(legendMiddle);
-            for i in range(math.trunc((classCount/2)-1)):
-                val = classification['classes'][len(classification['classes'])-1] + rightClassSize
+            classification['classes'].append(legendMiddle)
+            for i in range(math.trunc((classCount / 2) - 1)):
+                val = classification['classes'][len(classification['classes']) - 1] + rightClassSize
                 operator = self.getOperator(val)
-                legendVal = round(float(val)/operator)*operator
-                classification['classes'].append(legendVal);
-            
+                legendVal = round(float(val) / operator) * operator
+                classification['classes'].append(legendVal)
+
             classification['classes'] = sorted(classification['classes'], reverse=True)
-           #  print classification['classes']
+            #  print classification['classes']
 
             leftRange = legendMiddle - legendMin
             # print leftRange, classCount/2.0
-            operator = self.getOperator(leftRange/(classCount/2.0))
-            leftClassSize = round(float(leftRange/(classCount/2.0))/operator)*operator
-#             print()
+            operator = self.getOperator(leftRange / (classCount / 2.0))
+            leftClassSize = round(float(leftRange / (classCount / 2.0)) / operator) * operator
+            #             print()
 
-            for i in range(math.trunc((classCount/2)-1)):
-                val = classification['classes'][len(classification['classes'])-1] - leftClassSize
+            for i in range(math.trunc((classCount / 2) - 1)):
+                val = classification['classes'][len(classification['classes']) - 1] - leftClassSize
                 operator = self.getOperator(val)
-                legendVal = round(float(val)/operator)*operator
-                classification['classes'].append(legendVal);
-            
+                legendVal = round(float(val) / operator) * operator
+                classification['classes'].append(legendVal)
+
             classification['classes'] = sorted(classification['classes'], reverse=False)
             # print classification['classes']
-            #print min, max, middle, scaleType
+            # print min, max, middle, scaleType
 
             return classification
 
@@ -281,14 +303,14 @@ class PreWorker(object):
     def getOperator(self, value):
         try:
             logOperator = logging.getLogger('preworker.getOperator')
-            if(value > 0):
+            if (value > 0):
                 digits = math.trunc(math.log10(math.fabs(value)))
             else:
                 digits = 0
-            if digits <=3:
+            if digits <= 3:
                 return 10
             else:
-                return 10**(digits-2)
+                return 10 ** (digits - 2)
         except Exception as e:
             logOperator.error('{}'.format(e))
 
@@ -297,6 +319,6 @@ class PreWorker(object):
             logOperator.debug('{}::{}::{}'.format(exc_type, fname, exc_tb.tb_lineno))
 
             sys.exit()
-            
+
     def getFilePath(self, pathTemplate, year):
         return (((pathTemplate.replace('{timestep}', year)).replace('[', '')).replace(']', '')).replace('/', '\\')

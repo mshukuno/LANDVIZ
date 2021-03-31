@@ -2,7 +2,12 @@
 import sys, os
 import logging
 from osgeo import osr
-import l2data as landis, l2utils as utils
+from l2utils.xmlreader import XMLreader
+
+from l2data import datastructure as landis
+
+
+# import l2data as landis, l2utils as utils
 import yaml
 
 class Collector(object):
@@ -20,7 +25,7 @@ class Collector(object):
             # load the project file
             xml = CONFIG['PROJECT']['INPUT_XML']
             xsd = os.path.join(CONFIG['APPLICATION']['PATH'], CONFIG['XSD']['PROJECT'])
-            self.projectFileXML = utils.XMLreader(xml, xsd)
+            self.projectFileXML = XMLreader(xml, xsd)
             logCreateProject.debug('Load Information from project file: {}'.format(os.path.abspath(self.CONFIG['PROJECT']['INPUT_XML'])))
                     
             # get project title
@@ -149,9 +154,8 @@ class Collector(object):
             self.CONFIG['PROJECT']['OUTPUT_DIR'] = args.outputFolder # output Folder
             logSetupConfig.debug('Detect Output Folder: {}'.format(os.path.abspath(self.CONFIG['PROJECT']['OUTPUT_DIR'])))
             
-            if args.nb_processes:
-                self.CONFIG['NBPROCESSES']['THREADS'] =args.nb_processes
             return self.CONFIG
+        
         except Exception as e:
             logSetupConfig.error('{}'.format(e))
 
@@ -214,7 +218,7 @@ class Collector(object):
                                 metadataExtensionFilePath = os.path.join(scenarioMetadataFolderPath, metadataExtensionFolderDir, metadataExtensionFolderDir + '.xml')
                                 if os.path.isfile(metadataExtensionFilePath):
                                     #load the metadata extension file
-                                    extensionFileXML = utils.XMLreader(metadataExtensionFilePath) #, xsdFile!!! FIXME (!!! BE sHURE ALL IS MANDATORY!!!)
+                                    extensionFileXML = XMLreader(metadataExtensionFilePath) #, xsdFile!!! FIXME (!!! BE sHURE ALL IS MANDATORY!!!)
                                     
                                     #load Additional Scenario Properties
                                     xmlQuery = extensionFileXML.queryXML(CONFIG['XPATH']['SCENARIOREPLICATION'])
@@ -272,7 +276,7 @@ class Collector(object):
                                                     outputObj.initTable(os.path.normpath(os.path.join(scenarioFolderPath, output[CONFIG['ATTRIB']['CSVFILEPATH']])))
                                                     fieldMetadataFilePath = os.path.normpath(os.path.join(scenarioFolderPath, output[CONFIG['ATTRIB']['METADATAFILEPATH']]))
 
-                                                    fieldMetadataFile = utils.XMLreader(fieldMetadataFilePath) #, xsdFile!!! FIXME (!!! BE sHURE ALL IS MANDATORY!!!)
+                                                    fieldMetadataFile = XMLreader(fieldMetadataFilePath) #, xsdFile!!! FIXME (!!! BE sHURE ALL IS MANDATORY!!!)
                                                     
                                                     #load field with attributes
                                                     fieldXmlQuery = fieldMetadataFile.queryXML(CONFIG['XPATH']['CSVFIELD'])

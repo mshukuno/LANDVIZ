@@ -1,0 +1,47 @@
+03/31/2021 06:09:07 PM landis.main               INFO     Start LANDIS-II PreProcTool
+03/31/2021 06:09:07 PM collector.setupConfig     INFO     Setup application configuration
+03/31/2021 06:09:07 PM collector.setupConfig     DEBUG    Detect Application Folder: C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ\src\PreProcTool\src\dist\PreProcTool\main.py
+03/31/2021 06:09:07 PM collector.setupConfig     DEBUG    Detect Project File: C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ\example\small_example\preproc_VizTool_example.xml
+03/31/2021 06:09:07 PM collector.setupConfig     DEBUG    Detect Output Folder: C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ_Output\sm_output_8
+03/31/2021 06:09:07 PM collector.createProject   INFO     Create Project
+03/31/2021 06:09:07 PM collector.createProject   DEBUG    Load Information from project file: C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ\example\small_example\preproc_VizTool_example.xml
+03/31/2021 06:09:07 PM collector.createProject   INFO     Project name: "Chippewa National Forest Landscape"
+03/31/2021 06:09:07 PM collector.loadSRS         INFO     Load spatial refrence and geo extent from the project xml file
+03/31/2021 06:09:07 PM collector.loadSRS         DEBUG    SRS definition: PROJCS["unknown",GEOGCS["unknown",DATUM["North_American_Datum_1983",SPHEROID["GRS 1980",6378137,298.257222101,AUTHORITY["EPSG","7019"]],AUTHORITY["EPSG","6269"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",-93],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH]]
+03/31/2021 06:09:07 PM collector.loadSRS         DEBUG    geo extent: {'ulx': '373434.717985773', 'uly': '5300017.52204077', 'lrx': '466234.717985773', 'lry': '5202717.52204077'}
+03/31/2021 06:09:07 PM collector.loadMapPrefs    INFO     Load Map Preferences form project xml file
+03/31/2021 06:09:07 PM collector.loadMapPrefs    DEBUG    Zoom: [{'min': '7', 'max': '11', 'init': '9'}]
+03/31/2021 06:09:07 PM collector.loadMapPrefs    DEBUG    Basemap: [{'source': 'osm', 'brightness': '0', 'contrast': '1', 'saturation': '0'}]
+03/31/2021 06:09:07 PM collector.loadMapPrefs    DEBUG    Legend: [{'initClassCount': '3', 'sequentialCol': 'Reds', 'divergingCol': 'PiYG', 'qualitativeCol': 'Paired'}]
+03/31/2021 06:09:07 PM collector.loadDataStruct  INFO     Load Datastructure from Lanids Metadata
+03/31/2021 06:09:07 PM output.genOutputDirs      INFO     Generate output directories
+03/31/2021 06:09:07 PM output.genOutputDirs      DEBUG    Create landisdata directory: C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ_Output\sm_output_8\landisdata
+03/31/2021 06:09:07 PM preworker.prepairTables   INFO     Start prepairing Table Output
+03/31/2021 06:09:07 PM preworker.prepairTables   INFO     End prepairing Table Output [time: 0.0 sec]
+03/31/2021 06:09:07 PM preworker.prepairMaps     INFO     Start prepairing Map Output
+03/31/2021 06:09:07 PM preworker.prepairMaps     INFO     scenario: Baseline Climate, BaseWind
+03/31/2021 06:09:07 PM preworker.prepairMaps     INFO     extension: Base Wind
+03/31/2021 06:09:07 PM preworker.prepairMaps     INFO     output: severity
+03/31/2021 06:09:07 PM preworker.prepairMaps     INFO     prepair year = 0 [year not available]
+03/31/2021 06:09:07 PM preworker.prepairMaps     INFO     prepair year = 10
+03/31/2021 06:09:07 PM preworker.prepairMaps     INFO     prepair year = 20
+03/31/2021 06:09:07 PM preworker.prepairMaps     INFO     prepair year = 30
+03/31/2021 06:09:07 PM preworker.prepairMaps     INFO     prepair year = 40
+03/31/2021 06:09:07 PM preworker.prepairMaps     INFO     prepair year = 50
+03/31/2021 06:09:07 PM preworker.prepairMaps     INFO     prepair year = 60
+03/31/2021 06:09:07 PM preworker.prepairMaps     INFO     prepair year = 70
+03/31/2021 06:09:07 PM preworker.prepairMaps     INFO     prepair year = 80
+03/31/2021 06:09:08 PM preworker.prepairMaps     INFO     prepair year = 90
+03/31/2021 06:09:08 PM preworker.prepairMaps     INFO     prepair year = 100
+03/31/2021 06:09:15 PM preworker.prepairMaps     INFO     End prepairing Map Output [time: 8.603630304336548 sec]
+03/31/2021 06:09:15 PM output.saveMetadata       INFO     Save Metadata as JSON files
+03/31/2021 06:09:15 PM output.copyWebbase        INFO     Copy webbase to output directory
+03/31/2021 06:09:16 PM weblinks.addWeblinks      INFO     Add weblinks
+03/31/2021 06:09:16 PM weblinks.addWeblinks      INFO     Weblinks found - Add links to index.html
+03/31/2021 06:09:16 PM weblinks.addWeblinks      INFO     Add links to index.html - completed
+03/31/2021 06:09:16 PM output.updateWebPrefs     INFO     Update web settings file
+03/31/2021 06:09:16 PM output.zipOutput          INFO     Create zipfile for server upload
+03/31/2021 06:09:17 PM output.zipOutput          INFO     Output Folder: C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ_Output\sm_output_8
+03/31/2021 06:09:17 PM output.zipOutput          INFO     Zip File: C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ_Output\sm_output_8.zip
+03/31/2021 06:09:17 PM landis.main               INFO     Processing time: 0:00:10.402725
+03/31/2021 06:09:17 PM landis.main               INFO     End of LANDIS-II PreProcTool.
