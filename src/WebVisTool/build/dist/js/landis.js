@@ -5,11 +5,12 @@
       this.init = true;
 
       var settingId;
+
       if (!((settingId = getUrlParameter('s')) && (this.settings = loadJson('config/' + settingId + '.json')))) {
-        this.settings = loadJson('config/default_settings.json');
+        this.settings = loadJson('config/default_settings.json')
         if (!this.settings) {
           alert("bad settings file");
-        }
+        } 
       }
 
       /* EXPERIMENTAL
@@ -1155,7 +1156,7 @@
         });
 
 
-      $('input[name="scenario-checkbox"]:checkbox').change(function (event) {
+      $('input[name="scenario-checkbox"]:checkbox').on('change', function (event) {
         var i,
           selectedScenarios = $('input[name="scenario-checkbox"]:checkbox:checked'),
           notSelectedScenarios = $('input[name="scenario-checkbox"]:checkbox:not(:checked)');
@@ -1361,7 +1362,7 @@
 
       }
 
-      $('input[name="map-control-checkbox"]:checkbox').change(function (e) {
+      $('input[name="map-control-checkbox"]:checkbox').on('change', function (e) {
         var extOut = $(this).val().split('-').map(function (x) {
             return parseInt(x, 10);
           }),
@@ -1593,7 +1594,7 @@
 
       }
 
-      $('input[name="chart-control-checkbox"]:checkbox').change(function (e) {
+      $('input[name="chart-control-checkbox"]:checkbox').on('change', function (e) {
         var extOutField = $(this).val().split('-').map(function (x) {
           return parseInt(x, 10);
         });
@@ -3147,7 +3148,7 @@
         .attr('id', 'chart-' + self.options.chartId)
         .appendTo(self._chartVisContent);
 
-      self._chartVisChart.resize(function () {
+      self._chartVisChart.on('resize', function () {
         self.updateTime();
       });
 
@@ -4128,7 +4129,7 @@ $(document).ready(function () {
 
   });
 
-  $(document).bind("fullscreenchange", function () {
+  $(document).on("fullscreenchange", function () {
     if ($(document).fullScreen()) {
       $('#toggleFullscreen').addClass('isFull');
     } else {
@@ -4169,7 +4170,7 @@ $(document).ready(function () {
 
 });
 
-$(window).resize(function () {
+$(window).on('resize', function () {
   arrangeApplicationData();
 });
 // var declearation way up

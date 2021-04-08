@@ -162,8 +162,8 @@ function installFullScreenHandlers()
     }
 
     // Install the event handlers
-    jQuery(document).bind(change, fullScreenChangeHandler);
-    jQuery(document).bind(error, fullScreenErrorHandler);
+    jQuery(document).on(change, fullScreenChangeHandler);
+    jQuery(document).on(error, fullScreenErrorHandler);
 }
 
 jQuery.fn["fullScreen"] = fullScreen;

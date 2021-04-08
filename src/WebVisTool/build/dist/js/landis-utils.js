@@ -1,12 +1,17 @@
+function getLandisJson(jsonFile){
+    return $.getJSON(jsonFile, function(data){
+        return data
+    });
+}
 //loads any Json File to Object
 function loadJson(jsonFile) {
     $.ajaxSetup({'async': false});
     var json = {};
-    $.getJSON(jsonFile, function( data ) {
+        $.getJSON(jsonFile, function( data ) {
         json = data;
     });
     $.ajaxSetup({'async': true});
-    //console.log(json);
+    console.log(json);
     if (jQuery.isEmptyObject(json)) {
         return false;
     } else {
