@@ -1,7 +1,0 @@
-03/31/2021 06:16:31 PM landis.main               INFO     Start LANDIS-II PreProcTool
-03/31/2021 06:16:31 PM metadata_mod.get_project_xml INFO     [1] scenario
-03/31/2021 06:16:31 PM preprocess.mergeXMLs      INFO     CNF_Landscape_Historic-LinearWind: [2] XML files
-03/31/2021 06:16:31 PM preprocess.mergeXMLs      INFO     [2] XML files merged
-03/31/2021 06:16:31 PM preprocess.mergeXMLs      INFO     Merge complete
-03/31/2021 06:16:31 PM preprocess.mergeXMLs      INFO     
-END
