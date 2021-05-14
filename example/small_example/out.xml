@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Catalog name="LANDIS II: XML Configuration Tool">
+  <Scenario name="CNF_Landscape_Historic-LinearWind" xmlPath="\Metadata\Base Wind\Base Wind.xml">
+    <landisMetadata>
+      <extension name="Base Wind" timeInterval="10">
+        <scenario-replication timeMin="0" timeMax="100" rasterOutCellArea="1"/>
+        <outputs>
+          <output type="Table" name="WindLog" filePath="wind-events-log.csv" visualize="False" MetadataFilePath="Metadata\Base Wind\WindLog_Metadata.xml"/>
+          <output type="Map" name="severity" filePath="wind/severity-{timestep}.img" visualize="False" unit="severity (1-5)" dataType="Ordinal"/>
+        </outputs>
+      </extension>
+    </landisMetadata>
+  </Scenario>
+  <Scenario name="CNF_Landscape_Historic-LinearWind" xmlPath="\Metadata\Base Wind\WindLog_Metadata.xml">
+    <landisMetadata>
+      <output>
+        <extension name="Base Wind" metadataFilePath="Base Wind.xml"/>
+        <fields>
+          <field name="Time" description="..." unit="year"/>
+          <field name="InitRow" description="Initiation Row"/>
+          <field name="InitColumn" description="Initiation Column"/>
+          <field name="TotalSites" description="Total Number of Sites in Event" unit="count"/>
+          <field name="DamagedSites" description="Number of Damaged Sites in Event" unit="count"/>
+          <field name="CohortsKilled" description="Number of Cohorts Killed" unit="count"/>
+          <field name="MeanSeverity" description="Mean Severity (1-5)" unit="severity (1-5)" format="0.00"/>
+        </fields>
+      </output>
+    </landisMetadata>
+  </Scenario>
+</Catalog>
