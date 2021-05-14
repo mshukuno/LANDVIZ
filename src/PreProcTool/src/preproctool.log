@@ -1,0 +1,187 @@
+05/14/2021 01:55:28 PM landis.main               INFO     Start LANDIS-II PreProcTool
+05/14/2021 01:55:28 PM l2utils.collector         INFO     Setup application configuration
+05/14/2021 01:55:28 PM l2utils.collector         INFO     Detect Application Folder: C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ\src\PreProcTool\src\app_settings.py
+05/14/2021 01:55:28 PM l2utils.collector         INFO     Detect Project File: C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ_Output\NoAM\preproc_VizTool_GLRI_All_Scenarios.xml
+05/14/2021 01:55:28 PM l2utils.collector         INFO     Detect Output Folder: C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ_Output\output_22
+05/14/2021 01:55:28 PM l2utils.collector         INFO     Create Project
+05/14/2021 01:55:28 PM l2utils.collector         INFO     Load Information from project file: C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ_Output\NoAM\preproc_VizTool_GLRI_All_Scenarios.xml
+05/14/2021 01:55:28 PM l2utils.collector         INFO     Project name: "GLRI St. Louis Watershed Landscape"
+05/14/2021 01:55:28 PM l2utils.collector         INFO     Load spatial refrence and geo extent from the project xml file
+05/14/2021 01:55:28 PM l2utils.collector         INFO     SRS definition: PROJCS["unknown",GEOGCS["unknown",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]]],PROJECTION["Albers_Conic_Equal_Area"],PARAMETER["latitude_of_center",23],PARAMETER["longitude_of_center",-96],PARAMETER["standard_parallel_1",29.5],PARAMETER["standard_parallel_2",45.5],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH]]
+05/14/2021 01:55:28 PM l2utils.collector         INFO     geo extent: {'ulx': '208215.0', 'uly': '2765355.0', 'lrx': '349785.0', 'lry': '2619915.0'}
+05/14/2021 01:55:28 PM l2utils.collector         INFO     Load Map Preferences form project xml file
+05/14/2021 01:55:28 PM l2utils.collector         INFO     Zoom: [{'min': '8', 'max': '12', 'init': '10'}]
+05/14/2021 01:55:28 PM l2utils.collector         INFO     Basemap: [{'source': 'osm', 'brightness': '0', 'contrast': '1', 'saturation': '0'}]
+05/14/2021 01:55:28 PM l2utils.collector         INFO     Legend: [{'initClassCount': '3', 'sequentialCol': 'Reds', 'divergingCol': 'PiYG', 'qualitativeCol': 'Paired'}]
+05/14/2021 01:55:28 PM l2utils.collector         INFO     Load data structure from Landis Metadata
+05/14/2021 01:55:28 PM l2utils.outputworker      INFO     Generate output directories
+05/14/2021 01:55:28 PM l2utils.outputworker      INFO     Create landisdata directory: C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ_Output\output_22\landisdata
+05/14/2021 01:55:28 PM l2utils.preworker         INFO     Start prepairing Table Output
+05/14/2021 01:55:28 PM l2utils.preworker         INFO     End prepairing Table Output [time: 0.0 sec]
+05/14/2021 01:55:28 PM l2utils.preworker         INFO     Start prepairing Map Output
+05/14/2021 01:55:28 PM l2utils.preworker         INFO     scenario: Historic Climate, Recent Trends
+05/14/2021 01:55:28 PM l2utils.preworker         INFO     extension: Biomass Insects
+05/14/2021 01:55:28 PM l2utils.preworker         INFO     output: FTC Biomass Mortality
+05/14/2021 01:55:28 PM l2utils.preworker         INFO     prepair year = 0 [year not available]
+05/14/2021 01:55:28 PM l2utils.preworker         INFO     prepair year = 1 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:28 PM l2utils.preworker         INFO     prepair year = 2 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:28 PM l2utils.preworker         INFO     prepair year = 3
+05/14/2021 01:55:28 PM l2utils.preworker         INFO     prepair year = 4 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:28 PM l2utils.preworker         INFO     prepair year = 5 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:28 PM l2utils.preworker         INFO     prepair year = 6 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:28 PM l2utils.preworker         INFO     prepair year = 7 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:28 PM l2utils.preworker         INFO     prepair year = 8 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:28 PM l2utils.preworker         INFO     prepair year = 9
+05/14/2021 01:55:28 PM l2utils.preworker         INFO     prepair year = 10 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:28 PM l2utils.preworker         INFO     prepair year = 11 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:28 PM l2utils.preworker         INFO     prepair year = 12 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:28 PM l2utils.preworker         INFO     prepair year = 13 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:28 PM l2utils.preworker         INFO     prepair year = 14 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:29 PM l2utils.preworker         INFO     prepair year = 15
+05/14/2021 01:55:29 PM l2utils.preworker         INFO     prepair year = 16 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:29 PM l2utils.preworker         INFO     prepair year = 17 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:29 PM l2utils.preworker         INFO     prepair year = 18 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:29 PM l2utils.preworker         INFO     prepair year = 19 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:29 PM l2utils.preworker         INFO     prepair year = 20 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:29 PM l2utils.preworker         INFO     prepair year = 21 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:29 PM l2utils.preworker         INFO     prepair year = 22 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:29 PM l2utils.preworker         INFO     prepair year = 23 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:29 PM l2utils.preworker         INFO     prepair year = 24 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:29 PM l2utils.preworker         INFO     prepair year = 25
+05/14/2021 01:55:29 PM l2utils.preworker         INFO     prepair year = 26 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:29 PM l2utils.preworker         INFO     prepair year = 27 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:29 PM l2utils.preworker         INFO     prepair year = 28
+05/14/2021 01:55:29 PM l2utils.preworker         INFO     prepair year = 29 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:29 PM l2utils.preworker         INFO     prepair year = 30 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:29 PM l2utils.preworker         INFO     prepair year = 31 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:29 PM l2utils.preworker         INFO     prepair year = 32 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:29 PM l2utils.preworker         INFO     prepair year = 33 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:29 PM l2utils.preworker         INFO     prepair year = 34 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:29 PM l2utils.preworker         INFO     prepair year = 35
+05/14/2021 01:55:29 PM l2utils.preworker         INFO     prepair year = 36 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:29 PM l2utils.preworker         INFO     prepair year = 37 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:29 PM l2utils.preworker         INFO     prepair year = 38 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:30 PM l2utils.preworker         INFO     prepair year = 39 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:30 PM l2utils.preworker         INFO     prepair year = 40 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:30 PM l2utils.preworker         INFO     prepair year = 41 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:30 PM l2utils.preworker         INFO     prepair year = 42 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:30 PM l2utils.preworker         INFO     prepair year = 43
+05/14/2021 01:55:30 PM l2utils.preworker         INFO     prepair year = 44
+05/14/2021 01:55:30 PM l2utils.preworker         INFO     prepair year = 45 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:30 PM l2utils.preworker         INFO     prepair year = 46 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:30 PM l2utils.preworker         INFO     prepair year = 47 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:30 PM l2utils.preworker         INFO     prepair year = 48
+05/14/2021 01:55:30 PM l2utils.preworker         INFO     prepair year = 49 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:30 PM l2utils.preworker         INFO     prepair year = 50 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:30 PM l2utils.preworker         INFO     prepair year = 51 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:30 PM l2utils.preworker         INFO     prepair year = 52 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:30 PM l2utils.preworker         INFO     prepair year = 53 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:30 PM l2utils.preworker         INFO     prepair year = 54 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:30 PM l2utils.preworker         INFO     prepair year = 55 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:30 PM l2utils.preworker         INFO     prepair year = 56 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:30 PM l2utils.preworker         INFO     prepair year = 57 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:30 PM l2utils.preworker         INFO     prepair year = 58
+05/14/2021 01:55:30 PM l2utils.preworker         INFO     prepair year = 59 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:30 PM l2utils.preworker         INFO     prepair year = 60 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:30 PM l2utils.preworker         INFO     prepair year = 61 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:30 PM l2utils.preworker         INFO     prepair year = 62 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:30 PM l2utils.preworker         INFO     prepair year = 63 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:31 PM l2utils.preworker         INFO     prepair year = 64
+05/14/2021 01:55:31 PM l2utils.preworker         INFO     prepair year = 65 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:31 PM l2utils.preworker         INFO     prepair year = 66 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:31 PM l2utils.preworker         INFO     prepair year = 67 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:31 PM l2utils.preworker         INFO     prepair year = 68 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:31 PM l2utils.preworker         INFO     prepair year = 69 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:31 PM l2utils.preworker         INFO     prepair year = 70 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:31 PM l2utils.preworker         INFO     prepair year = 71
+05/14/2021 01:55:31 PM l2utils.preworker         INFO     prepair year = 72 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:31 PM l2utils.preworker         INFO     prepair year = 73 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:31 PM l2utils.preworker         INFO     prepair year = 74 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:31 PM l2utils.preworker         INFO     prepair year = 75 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:31 PM l2utils.preworker         INFO     prepair year = 76 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:31 PM l2utils.preworker         INFO     prepair year = 77 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:31 PM l2utils.preworker         INFO     prepair year = 78 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:31 PM l2utils.preworker         INFO     prepair year = 79 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:31 PM l2utils.preworker         INFO     prepair year = 80
+05/14/2021 01:55:31 PM l2utils.preworker         INFO     prepair year = 81 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:31 PM l2utils.preworker         INFO     prepair year = 82 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:31 PM l2utils.preworker         INFO     prepair year = 83 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:31 PM l2utils.preworker         INFO     prepair year = 84 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:31 PM l2utils.preworker         INFO     prepair year = 85 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:31 PM l2utils.preworker         INFO     prepair year = 86 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 87 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 88 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 89 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 90 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 91
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 92 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 93 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 94 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 95 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 96 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 97 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 98 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 99
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 100 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 101 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 102 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 103 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 104 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 105 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 106 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 107 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 108
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 109 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 110 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 111 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 112 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:32 PM l2utils.preworker         INFO     prepair year = 113 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:33 PM l2utils.preworker         INFO     prepair year = 114 [No valid pixels found in sampling - skip map tiles]
+05/14/2021 01:55:33 PM tilertools.tiler_function INFO     Run GdalTiler
+05/14/2021 01:55:36 PM tilertools.tiler_function INFO     C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ_Output\output_22\landisdata\modeldata\1\1\1\3.png
+05/14/2021 01:55:36 PM tilertools.tiler_function INFO     C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ_Output\output_22\landisdata\modeldata\1\1\1\9.png
+05/14/2021 01:55:36 PM tilertools.tiler_function INFO     C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ_Output\output_22\landisdata\modeldata\1\1\1\15.png
+05/14/2021 01:55:36 PM tilertools.tiler_function INFO     C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ_Output\output_22\landisdata\modeldata\1\1\1\25.png
+05/14/2021 01:55:36 PM tilertools.tiler_function INFO     C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ_Output\output_22\landisdata\modeldata\1\1\1\28.png
+05/14/2021 01:55:36 PM tilertools.tiler_function INFO     C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ_Output\output_22\landisdata\modeldata\1\1\1\35.png
+05/14/2021 01:55:36 PM tilertools.tiler_function INFO     C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ_Output\output_22\landisdata\modeldata\1\1\1\43.png
+05/14/2021 01:55:36 PM tilertools.tiler_function INFO     C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ_Output\output_22\landisdata\modeldata\1\1\1\44.png
+05/14/2021 01:55:36 PM tilertools.tiler_function INFO     C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ_Output\output_22\landisdata\modeldata\1\1\1\48.png
+05/14/2021 01:55:36 PM tilertools.tiler_function INFO     C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ_Output\output_22\landisdata\modeldata\1\1\1\58.png
+05/14/2021 01:55:36 PM tilertools.tiler_function INFO     C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ_Output\output_22\landisdata\modeldata\1\1\1\64.png
+05/14/2021 01:55:36 PM tilertools.tiler_function INFO     C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ_Output\output_22\landisdata\modeldata\1\1\1\71.png
+05/14/2021 01:55:36 PM tilertools.tiler_function INFO     C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ_Output\output_22\landisdata\modeldata\1\1\1\80.png
+05/14/2021 01:55:36 PM tilertools.tiler_function INFO     C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ_Output\output_22\landisdata\modeldata\1\1\1\91.png
+05/14/2021 01:55:36 PM tilertools.tiler_function INFO     C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ_Output\output_22\landisdata\modeldata\1\1\1\99.png
+05/14/2021 01:55:36 PM tilertools.tiler_function INFO     C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ_Output\output_22\landisdata\modeldata\1\1\1\108.png
+05/14/2021 01:55:41 PM tilertools.tiler_function INFO     tile year = 3
+05/14/2021 01:55:41 PM tilertools.tiler_function INFO     tile year = 9
+05/14/2021 01:55:41 PM tilertools.tiler_function INFO     tile year = 15
+05/14/2021 01:55:41 PM tilertools.tiler_function INFO     tile year = 25
+05/14/2021 01:55:41 PM tilertools.tiler_function INFO     tile year = 28
+05/14/2021 01:55:41 PM tilertools.tiler_function INFO     tile year = 35
+05/14/2021 01:55:41 PM tilertools.tiler_function INFO     tile year = 43
+05/14/2021 01:55:41 PM tilertools.tiler_function INFO     tile year = 44
+05/14/2021 01:55:59 PM tilertools.tiler_function INFO     tile year = 48
+05/14/2021 01:55:59 PM tilertools.tiler_function INFO     tile year = 58
+05/14/2021 01:55:59 PM tilertools.tiler_function INFO     tile year = 64
+05/14/2021 01:55:59 PM tilertools.tiler_function INFO     tile year = 71
+05/14/2021 01:56:00 PM tilertools.tiler_function INFO     tile year = 80
+05/14/2021 01:56:00 PM tilertools.tiler_function INFO     tile year = 91
+05/14/2021 01:56:00 PM tilertools.tiler_function INFO     tile year = 99
+05/14/2021 01:56:00 PM tilertools.tiler_function INFO     tile year = 108
+05/14/2021 01:56:17 PM l2utils.preworker         INFO     End prepairing Map Output [time: 48.96576189994812 sec]
+05/14/2021 01:56:17 PM l2utils.outputworker      INFO     Save Metadata as JSON files
+05/14/2021 01:56:17 PM l2utils.outputworker      INFO     Copy webbase to output directory
+05/14/2021 01:56:18 PM l2utils.weblinks          INFO     Add weblinks
+05/14/2021 01:56:18 PM l2utils.weblinks          INFO     Weblinks found - Add links to index.html
+05/14/2021 01:56:19 PM l2utils.weblinks          INFO     Add links to index.html - completed
+05/14/2021 01:56:19 PM l2utils.outputworker      INFO     Update web settings file
+05/14/2021 01:56:19 PM l2utils.outputworker      INFO     Create zipfile for server upload
+05/14/2021 01:57:07 PM l2utils.outputworker      INFO     Output Folder: C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ_Output\output_22
+05/14/2021 01:57:07 PM l2utils.outputworker      INFO     Zip File: C:\Users\mshukun\Documents\GitHub_Projects\LANDVIZ_Output\output_22.zip
+05/14/2021 01:57:07 PM landis.main               INFO     Processing time: 0:01:38.914837
+05/14/2021 01:57:07 PM landis.main               INFO     End of LANDIS-II PreProcTool
+05/14/2021 01:57:07 PM landis.main               ERROR    FileNotFoundError	lib/shutil.py:120
+	[Errno 2] No such file or directory: 'C:\\Users\\mshukun\\Documents\\GitHub_Projects\\LANDVIZ\\src\\PreProcTool\\src\\logs\\proproctool.log'
+05/14/2021 01:57:07 PM landis.main               INFO     Failed to run LANDIS-II PreProcTool

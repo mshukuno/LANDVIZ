@@ -26,40 +26,29 @@
 import argparse
 import os
 import logging
-import sys
-import time
 
-from tilertools.tiler_function import *
-from tilertools.tiler_backend import Pyramid, resampling_lst, base_resampling_lst
+# Set logger for the tilertools
+logger = logging.getLogger(__name__)
+
 from tilertools import map2gdal
-from tilertools import tiler_global_mercator
+from tilertools.tiler_backend import Pyramid, resampling_lst, base_resampling_lst
+from tilertools.tiler_function import *
 
 
 def preprocess_src(src_opt):
-    # ----------------------------
-    logGdalTiler = logging.getLogger()
-
     try:
         src, options = src_opt
         opt = LooseDict(options)
         res = map2gdal.process_src(src, no_error=True, opt=opt)
-        ld('preprocess_src', res)
+        logger.info(res[0][0])
+        # ld('preprocess_src', res)
         return res
-    except Exception as e:
-        logGdalTiler.error('{}'.format(e))
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        logGdalTiler.debug('{}::{}::{}'.format(exc_type, fname, exc_tb.tb_lineno))
 
-        sys.exit()
-
-    # ----------------------------
+    except Exception as err:
+        app_settings.error_log(logger, err)
 
 
 def process_src(src_def_opt):
-    # ----------------------------
-    logGdalTiler = logging.getLogger('gdaltiler.process_src')
-
     try:
         src, delete_src, options = src_def_opt
         opt = LooseDict(options)
@@ -73,29 +62,17 @@ def process_src(src_def_opt):
         dest = dest_path(src, opt.dest_dir, ext)
 
         prm = profile(src, dest, opt)
-        pf('tile year = {}'.format(os.path.splitext(os.path.basename(src))[0]))
-        ld('tile year = {}'.format(os.path.splitext(os.path.basename(src))[0]))
+        logger.info(f'tile year = {os.path.splitext(os.path.basename(src))[0]}')
+        # pf('tile year = {}'.format(os.path.splitext(os.path.basename(src))[0]))
+        # ld('tile year = {}'.format(os.path.splitext(os.path.basename(src))[0]))
         prm.walk_pyramid()
-    except Exception as e:
-        logGdalTiler.error('{}'.format(e))
 
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        logGdalTiler.debug('{}::{}::{}'.format(exc_type, fname, exc_tb.tb_lineno))
-
-        sys.exit()
-
-    # ----------------------------
+    except Exception as err:
+        app_settings.error_log(logger, err)
 
 
-# ----------------------------
 class GdalTiler(object):
-
     def option_args(self, arg_lst):
-
-        # parser = argparse.ArgumentParser(usage="usage: %prog <options>... source...",
-        #                                  description='Tile cutter for GDAL-compatible raster maps')
-
         parser = argparse.ArgumentParser(description='Tile cutter for GDAL-compatible raster maps')
 
         parser.add_argument('-p', '--profile', '--to', dest="profile", metavar='PROFILE',
@@ -160,21 +137,16 @@ class GdalTiler(object):
         parser.add_argument("-m", "--after-map", action="store_true",
                             help='give an output file name  after name of a map file, otherwise after a name of an image file')
 
-        # ----------------------------
         options, args = parser.parse_known_args(arg_lst)
-
 
         if not args:
             parser.error('No input file(s) specified')
 
         return options, args
 
-    # ----------------------------
-
     def __init__(self, arguments):
-        logGdalTiler = logging.getLogger('gdaltiler.init')
-        # ----------------------------
         try:
+            logger.info('Run GdalTiler')
             options, args = self.option_args(arguments)
 
             parser = argparse.ArgumentParser(usage = "usage: %prog <options>... source...",
@@ -192,7 +164,7 @@ class GdalTiler(object):
 
             try:
                 sources = args
-            except:
+            except Exception:
                 raise Exception("No sources specified")
 
             srcOpt = []
@@ -204,22 +176,18 @@ class GdalTiler(object):
             srcDefOpt = []
             for r in flatten(res):
                 srcDefOpt.append((r[0], r[1], options))
-            # logTile = logging.getLogger('landis.tiler')
-            # logTile.debug('Start tiling process with multiprocessing')
             parallel_map(process_src, srcDefOpt)
-            # logTile.debug('End tiling process with multiprocessing')
         except Exception as e:
-            logGdalTiler.error('{}'.format(e))
-
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            logGdalTiler.debug('{}::{}::{}'.format(exc_type, fname, exc_tb.tb_lineno))
-
+            app_settings.error_log(logger, e)
             sys.exit()
             # __init__()
 
 
-if __name__ == '__main__':
-    argv = sys.argv
-    if sys.argv:
-        gdaltiler = GdalTiler(argv[1:])
+# if __name__ == '__main__':
+#     try:
+#         argv = sys.argv
+#         if sys.argv:
+#             GdalTiler(argv[1:])
+#
+#     except Exception as e:
+#         app_settings.error_log(logger, e)

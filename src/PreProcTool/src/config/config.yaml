@@ -20,8 +20,8 @@ XPATH:
     SCENARIOREPLICATION: /landisMetadata/extension/scenario-replication
     EXTENSION: /landisMetadata/extension
     OUTPUT: /landisMetadata/extension/outputs/output
-    PROJECTION: /landisPreProcProject/input/spatialRefernce/projection
-    GEOEXTENT: /landisPreProcProject/input/spatialRefernce/extent
+    PROJECTION: /landisPreProcProject/input/spatialReference/projection
+    GEOEXTENT: /landisPreProcProject/input/spatialReference/extent
     CSVFIELD: /landisMetadata/output/fields/field
     MAPZOOM: /landisPreProcProject/output/map/zoom
     BASEMAP: /landisPreProcProject/output/map/baseMap
@@ -52,6 +52,3 @@ ATTRIB:
 
 DEFAULT:
     PROJECTTITLE: LANDIS-II-Visualization
-    
-NBPROCESSES:
-    THREADS: 1

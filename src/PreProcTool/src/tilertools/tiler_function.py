@@ -29,9 +29,8 @@ from __future__ import print_function
 version = '%prog version 3.1.0'
 
 import sys
-# import os
-import os.path
 import logging
+import os.path
 from subprocess import Popen, PIPE
 import itertools
 import re
@@ -64,20 +63,24 @@ try:
 except:
     multiprocessing = None
 
+import app_settings
+
+logger = logging.getLogger(__name__)
+
 
 def data_dir():
     return sys.path[0]
 
 
 def log(title, *parms):
-    logging.debug(' '.join(map(str, parms)))
+    logger.debug(' '.join(map(str, parms)))
 
 
 ld = log
 
 
 def error(*parms):
-    logging.error(' '.join(map(str, parms)))
+    logger.error(' '.join(map(str, parms)))
 
 
 def ld_nothing(*parms):
@@ -96,7 +99,7 @@ def pf_nothing(*parms, **kparms):
 
 
 def set_nothreads():
-    ld('set_nothreads')
+    # ld('set_nothreads')
     global multiprocessing
     multiprocessing = None
 
@@ -104,7 +107,6 @@ def set_nothreads():
 def parallel_map(func, iterable):
     # ld('parallel_map', multiprocessing)
     # ~ return map(func, iterable
-    logTilerFunc = logging.getLogger('gdalfunctions.parallel_map')
     try:
         if multiprocessing is None or len(iterable) < 2:
             return map(func, iterable)
@@ -117,13 +119,7 @@ def parallel_map(func, iterable):
             mp_pool.join()
         return res
     except Exception as e:
-        logTilerFunc.error('{}'.format(e))
-
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        logTilerFunc.debug('{}::{}::{}'.format(exc_type, fname, exc_tb.tb_lineno))
-
-        sys.exit()
+        app_settings.error_log(logger, e)
 
 
 def flatten(two_level_list):
@@ -134,7 +130,7 @@ html.entities.name2codepoint['apos'] = ord(u"'")
 
 
 def strip_html(text):
-    'Removes HTML markup from a text string. http://effbot.org/zone/re-sub.htm#strip-html'
+    """Removes HTML markup from a text string. http://effbot.org/zone/re-sub.htm#strip-html"""
 
     def replace(match):  # pattern replacement function
         text = match.group(0)
@@ -184,7 +180,7 @@ except:
 
 def command(params, child_in=None):
     cmd_str = ' '.join(('"%s"' % i if ' ' in i else i for i in params))
-    ld('>', cmd_str, child_in)
+    # ld('>', cmd_str, child_in)
     if win32pipe:
         (stdin, stdout, stderr) = win32pipe.popen3(cmd_str, 't')
         if child_in:
@@ -193,23 +189,23 @@ def command(params, child_in=None):
         child_out = stdout.read()
         child_err = stderr.read()
         if child_err:
-            logging.warning(child_err)
+            logger.warning(child_err)
     else:
         process = Popen(params, stdin=PIPE, stdout=PIPE, stderr=PIPE, universal_newlines=True)
         (child_out, child_err) = process.communicate(child_in)
         if process.returncode != 0:
-            error("*** External program error: %s\n%s" % (cmd_str, child_err))
+            # error("*** External program error: %s\n%s" % (cmd_str, child_err))
             raise EnvironmentError(process.returncode, child_err)
-    ld('<', child_out, child_err)
+    # ld('<', child_out, child_err)
     try:
         process = Popen(params, stdin=PIPE, stdout=PIPE, stderr=PIPE, universal_newlines=True)
         (child_out, child_err) = process.communicate(child_in)
         if process.returncode != 0:
-            error("*** External program error: %s\n%s" % (cmd_str, child_err))
+            # error("*** External program error: %s\n%s" % (cmd_str, child_err))
             raise EnvironmentError(process.returncode, child_err)
     except Exception as e:
-        print(e)
-    ld('<', child_out, child_err)
+        app_settings.error_log(logger, e)
+    # ld('<', child_out, child_err)
     return child_out
 
 
@@ -221,7 +217,7 @@ def dest_path(src, dest_dir, ext='', template='%s'):
         dest_dir = src_dir
     if dest_dir:
         dest = '%s/%s' % (dest_dir, dest)
-    ld(base, dest)
+    # ld(base, dest)
     return dest
 
 
@@ -389,7 +385,7 @@ def sasplanet_hlg2ogr(fname):
             val = float(l.split('=')[1].replace(',', '.'))
             coords[1 if 'Lat' in l else 0].append(val)
         points = zip(*coords)
-        ld('sasplanet_hlg2ogr', 'points', points)
+        # ld('sasplanet_hlg2ogr', 'points', points)
 
     ring = ogr.Geometry(ogr.wkbLinearRing)
     for p in points:
@@ -423,18 +419,18 @@ def shape2mpointlst(datasource, dst_srs, feature_name=None):
         gdal.ErrorReset()
         ds = sasplanet_hlg2ogr(datasource)
     if not ds:
-        ld('shape2mpointlst: Invalid datasource %s' % datasource)
+        # ld('shape2mpointlst: Invalid datasource %s' % datasource)
         return []
 
     drv_name = ds.GetDriver().GetName()
     is_kml = 'KML' in drv_name
-    ld('shape2mpointlst drv', drv_name, is_kml)
+    # ld('shape2mpointlst drv', drv_name, is_kml)
 
     n_layers = ds.GetLayerCount()
     for j in range(n_layers):
         layer = ds.GetLayer(j)
         n_features = layer.GetFeatureCount()
-        ld('shape2mpointlst layer', j, n_layers, n_features, feature_name, layer)
+        # ld('shape2mpointlst layer', j, n_layers, n_features, feature_name, layer)
 
         for i in range(n_features):
             feature = layer.GetNextFeature()
@@ -442,7 +438,7 @@ def shape2mpointlst(datasource, dst_srs, feature_name=None):
             fc = feature.GetFieldCount()
             for l in range(fc):
                 fdef = feature.GetFieldDefnRef(l)
-                ld(l, fdef.GetNameRef(), feature.GetFieldAsString(l))
+                # ld(l, fdef.GetNameRef(), feature.GetFieldAsString(l))
 
             if is_kml:
                 i_icon = feature.GetFieldIndex('icon')
@@ -460,7 +456,7 @@ def shape2mpointlst(datasource, dst_srs, feature_name=None):
                     continue
                 name = feature.GetFieldAsString(i_name).decode('utf-8')
 
-            ld('shape2mpointlst name', name == feature_name, name, feature_name)
+            # ld('shape2mpointlst name', name == feature_name, name, feature_name)
             if name == feature_name:
                 # ~ feature.DumpReadable()
 
@@ -489,7 +485,7 @@ def shape2mpointlst(datasource, dst_srs, feature_name=None):
                         dst_points = srs_tr.transform(src_points)
                         # ~ ld(src_points)
                         multipoint_lst.append(dst_points)
-                ld('mpointlst', layer_proj, dst_srs, multipoint_lst)
+                # ld('mpointlst', layer_proj, dst_srs, multipoint_lst)
 
                 feature.Destroy()
                 return multipoint_lst
@@ -501,14 +497,14 @@ def shape2cutline(cutline_ds, raster_ds, feature_name=None):
     raster_proj = txt2proj4(raster_ds.GetProjection())
     if not raster_proj:
         raster_proj = txt2proj4(raster_ds.GetGCPProjection())
-    ld(raster_proj, raster_ds.GetProjection(), raster_ds)
+    # ld(raster_proj, raster_ds.GetProjection(), raster_ds)
 
     pix_tr = GdalTransformer(raster_ds)
     for points in shape2mpointlst(cutline_ds, raster_proj, feature_name):
         p_pix = pix_tr.transform(points, inv=True)
         mpoly.append(','.join(['%r %r' % (p[0], p[1]) for p in p_pix]))
     cutline = 'MULTIPOLYGON(%s)' % ','.join(['((%s))' % poly for poly in mpoly]) if mpoly else None
-    ld('cutline', cutline)
+    # ld('cutline', cutline)
     return cutline
 
 
@@ -566,7 +562,8 @@ def read_transparency(src_dir):
         with open(os.path.join(src_dir, 'transparency.json'), 'r') as f:
             transparency = json.load(f)
     except:
-        ld("transparency cache load failure")
+        # ld("transparency cache load failure")
+        logger.error("transparency cache load failure")
         transparency = {}
     return transparency
 
@@ -576,7 +573,7 @@ def write_transparency(dst_dir, transparency):
         with open(os.path.join(dst_dir, 'transparency.json'), 'w') as f:
             json.dump(transparency, f, indent=0)
     except:
-        logging.warning("transparency cache save failure")
+        logger.warning("transparency cache save failure")
 
 
 type_map = (
@@ -596,7 +593,7 @@ def type_ext_from_buffer(buf):
                 #                 contnue
                 continue
             return mime_type, ext
-    error('Cannot determing image type in a buffer:', buf[:20])
+    # error('Cannot determing image type in a buffer:', buf[:20])
     raise KeyError('Cannot determing image type in a buffer')
 
 
@@ -609,7 +606,7 @@ def mime_from_ext(ext_to_find):
         if ext_to_find == ext:
             return mime_type
     else:
-        error('Cannot determing image MIME type')
+        # error('Cannot determing image MIME type')
         raise KeyError('Cannot determing image MIME type')
 
 
@@ -618,7 +615,7 @@ def ext_from_mime(mime_to_find):
         if mime_to_find == mime_type:
             return ext
     else:
-        error('Cannot determing image MIME type')
+        # error('Cannot determing image MIME type')
         raise KeyError('Cannot determing image MIME type')
 
 

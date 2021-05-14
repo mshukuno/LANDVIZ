@@ -1,4 +1,3 @@
-
 # LANDIS-II-Visualization
 # PreProc Tool patch
 # Reads weblinks from XML and add links to HTML "Information" button
@@ -6,13 +5,16 @@
 # Makiko Shukunobe, Center for Geospatial Analitics, North Carolina State University
 
 import os
-import sys
 import shutil
 import logging
 from lxml import etree
 from bs4 import BeautifulSoup
+import app_settings
 
-class Weblinks():
+logger = logging.getLogger(__name__)
+
+
+class Weblinks(object):
     def __init__(self, xmlF, appPath, outPath):
         self.__htmlTemplateF = os.path.join(appPath, 'template\\template.html')
         self.__xmlF = xmlF
@@ -24,11 +26,10 @@ class Weblinks():
         Add weblinks from xml to html
         """
         try:
-            logWeblinks = logging.getLogger('weblinks.addWeblinks')
-            logWeblinks.info('Add weblinks')
+            logger.info('Add weblinks')
 
             # remove index.html if the file exsists
-            if (os.path.isfile(self.__outHtmlPath)):
+            if os.path.isfile(self.__outHtmlPath):
                 os.remove(self.__outHtmlPath)
 
             # get weblinks from xml file
@@ -39,8 +40,8 @@ class Weblinks():
             # I/O get template.html file
             html = open(self.__htmlTemplateF, 'r')
 
-            if (len(z) > 0):
-                logWeblinks.info('Weblinks found - Add links to index.html')
+            if len(z) > 0:
+                logger.info('Weblinks found - Add links to index.html')
                 soup = BeautifulSoup(html, 'html.parser')
 
                 # find div to append <li><a href='' target='_blank></a><li>
@@ -62,15 +63,13 @@ class Weblinks():
                 # close files
                 html.close()
                 newhtml.close()
-                logWeblinks.info('Add links to index.html - completed')
+                logger.info('Add links to index.html - completed')
             else:
-                logWeblinks.info(
+                logger.info(
                     'No weblinks found in XML file - create index.html')
                 # copy template.html
                 shutil.copyfile(self.__htmlTemplateF, self.__outHtmlPath)
-                logWeblinks.info('Copy index.html - completed')
+                logger.info('Copy index.html - completed')
 
         except Exception as e:
-            print('Exception@weblinks.addWeblinks:', e)
-            logging.error('Exception@weblinks.addWeblinks'.format(e))
-            sys.exit()
+            app_settings.error_log(logger, e)

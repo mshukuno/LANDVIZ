@@ -26,9 +26,6 @@
 from __future__ import with_statement
 
 import os
-import logging
-import locale
-
 try:
     from osgeo import gdal
     from osgeo import osr
@@ -39,7 +36,9 @@ except ImportError:
     import gdal
 
 from tilertools.tiler_function import *
+import logging
 
+logger = logging.getLogger(__name__)
 reader_class_map = []
 
 
@@ -55,25 +54,21 @@ def dst_path(src, dst_dir, ext='', template='%s'):
         dst_dir = src_dir
     if dst_dir:
         dest = '%s/%s' % (dst_dir, dest)
-    ld('base', base, 'dest', dest, 'src', src)
+    # logger.info('base', base, 'dest', dest, 'src', src)
+    # ld('base', base, 'dest', dest, 'src', src)
     return dest
 
 
 class Opt(object):
-
     def __init__(self, **dictionary):
         self.dict = dictionary
 
     def __getattr__(self, name):
         return self.dict.setdefault(name, None)
 
-###############################################################################
-
 
 class RefPoints(object):
-    'source geo-reference points and polygons'
-
-###############################################################################
+    """source geo-reference points and polygons"""
     @staticmethod
     def transpose(ref_lst):  # helper function for children classes
         return [list(i) for i in zip(*ref_lst)]
@@ -88,14 +83,14 @@ class RefPoints(object):
         self.zone = zone
         self.hemisphere = hemisphere
 
-        ld('RefPoints', self.__dict__)
+        # ld('RefPoints', self.__dict__)
 
         nrefs = len(filter(None, (self.pixels, self.latlong, self.cartesian))[0])
         if not self.ids:
             self.ids = map(str, range(1, nrefs + 1))
 
         if nrefs == 2:
-            logging.warning(' Only 2 reference points: assuming the chart is north alligned')
+            logger.warning(' Only 2 reference points: assuming the chart is north alligned')
             self.ids += ['Extra03', 'Extra04']
             for i in filter(None, (self.pixels, self.latlong, self.cartesian, self.zone, self.hemisphere)):
                 try:  # list of coordinates? -- swap x and y between them
@@ -104,7 +99,7 @@ class RefPoints(object):
                 except IndexError:  # just copy them
                     i.append(i[0])
                     i.append(i[1])
-            ld('RefPoints extra', self.__dict__)
+            # ld('RefPoints extra', self.__dict__)
 
         self.ids = [s.encode('utf-8') for s in self.ids]
 
@@ -119,13 +114,13 @@ class RefPoints(object):
         if self.pixels:
             return self.pixels
         p_dst = self.proj_coords()
-        ld(p_dst)
+        # ld(p_dst)
         pix_tr = GdalTransformer(
             dataset,
             METHOD='GCP_POLYNOMIAL' if not self.owner.map.options.tps else 'GCP_TPS'
         )
         p_pix = pix_tr.transform(p_dst, inv=True)
-        ld(p_pix)
+        # ld(p_pix)
         return [(p[0], p[1]) for p in p_pix]
 
     def grid2coord(self):  # to re-implemented by children if applicable
@@ -146,18 +141,14 @@ class RefPoints(object):
         if not self.cartesian:  # refs are lat/long
             leftmost = min(zip(self.pixels, self.latlong), key=lambda r: r[0][0])
             rightmost = max(zip(self.pixels, self.latlong), key=lambda r: r[0][0])
-            ld('leftmost', leftmost, 'rightmost', rightmost)
+            # ld('leftmost', leftmost, 'rightmost', rightmost)
             if leftmost[1][0] > rightmost[1][0]:
                 return leftmost[1][0]
         return None
 
-###############################################################################
-
 
 class LatLonRefPoints(RefPoints):
-    'geo-reference points with geodetic coordinates initialised with a sigle list'
-
-###############################################################################
+    """geo-reference points with geodetic coordinates initialised with a sigle list"""
     def __init__(self, owner, ref_lst):
         super(LatLonRefPoints, self).__init__(
             owner,
@@ -166,13 +157,8 @@ class LatLonRefPoints(RefPoints):
                 self.transpose(ref_lst)[:3]))
             )
 
-###############################################################################
-
 
 class SrcMap(object):
-
-###############################################################################
-
     srs_defs = None
     data_file = None
 
@@ -191,13 +177,8 @@ class SrcMap(object):
 #    def get_layers(self):
 #        pass
 
-###############################################################################
-
 
 class SrcLayer(object):
-
-###############################################################################
-
     def __init__(self, src_map, data):
         self.map = src_map
         self.data = data
@@ -212,11 +193,11 @@ class SrcLayer(object):
         self.srs, self.dtm = self.get_srs()  # estimate SRS
 
     def __del__(self):
-        ld('SrcLayer __del__')
+        # ld('SrcLayer __del__')
         self.raster_ds = None
 
     def get_srs(self):  # redefined in reader_kml.py
-        'returns srs for the map, and DTM shifts if any'
+        """returns srs for the map, and DTM shifts if any"""
         options = self.map.options
         if options.srs:
             return(options.srs, None)
@@ -247,7 +228,7 @@ class SrcLayer(object):
             datum = self.get_datum()
             proj4.extend(datum)
         proj4.extend(['+nodefs'])  # '+wktext',
-        ld('proj4', proj4)
+        # ld('proj4', proj4)
         return ' '.join(proj4).encode('utf-8'), dtm
 
     def convert(self):
@@ -340,6 +321,3 @@ class SrcLayer(object):
                                 ['%r %r' % (i[0], i[1]) for i in plys.proj_coords()]))
         poly_wkt = 'MULTIPOLYGON(((%s)))' % ','.join(['%r %r' % tuple(i) for i in pix_lst])  # Create cutline
         return poly_wkt, poly_shape
-# SrcLayer
-
-###############################################################################

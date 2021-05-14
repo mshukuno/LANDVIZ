@@ -27,17 +27,9 @@
 
 from __future__ import with_statement
 
-import os
-import sys
-import logging
 import codecs
 import argparse
-
-# from optparse import OptionParser
-
-
 from tilertools.tiler_function import *
-
 from tilertools import reader_backend
 
 options = None
@@ -56,7 +48,7 @@ def process_src(src, no_error=False, opt=None):
             break
     else:
         if not no_error:
-            logging.error(" Invalid file: %s" % src)
+            logger.error(" Invalid file: %s" % src)
         return [(src, False)]
 
     if not opt:
@@ -68,12 +60,8 @@ def process_src(src, no_error=False, opt=None):
 parser = None
 
 
-# ----------------------------
-
 def parse_args(self, arg_lst):
-    # ----------------------------
-    parser = argparse.ArgumentParser(usage="usage: %prog <options>... map_file...", version=version,
-                                     description="Extends GDAL's builtin support for a few mapping formats: BSB/KAP, GEO/NOS, Ozi map. "
+    parser = argparse.ArgumentParser(description="Extends GDAL's builtin support for a few mapping formats: BSB/KAP, GEO/NOS, Ozi map. "
                                                  "The script translates a map file with into GDAL .vrt")
     parser.add_argument("--srs", default=None,
                         help="specify a full coordinate system for an output file (PROJ.4 definition)")
@@ -105,54 +93,16 @@ def parse_args(self, arg_lst):
     return parser.parse_args(arg_lst)
 
 
-#     parser = OptionParser(
-#         usage="usage: %prog <options>... map_file...",
-#         version=version,
-#         description="Extends GDAL's builtin support for a few mapping formats: BSB/KAP, GEO/NOS, Ozi map. "
-#         "The script translates a map file with into GDAL .vrt")
-#     parser.add_option("--srs", default=None,
-#         help="specify a full coordinate system for an output file (PROJ.4 definition)")
-#     parser.add_option("--datum", default=None,
-#         help="override a datum part only (PROJ.4 definition)")
-#     parser.add_option("--proj", default=None,
-#         help="override a projection part only (PROJ.4 definition)")
-#     parser.add_option("--force-dtm", action="store_true",
-#         help='force using BSB datum shift to WGS84 instead of native BSB datum')
-#     parser.add_option("--dtm",dest="dtm_shift",default=None,metavar="SHIFT_LONG,SHIFT_LAT",
-#         help='northing and easting to WGS84 datum in seconds of arc')
-#     parser.add_option('--tps', action="store_true",
-#         help='Force use of thin plate spline transformer based on available GCPs)')
-#     parser.add_option("--get-cutline", action="store_true",
-#         help='print a definition of a cutline polygon, then exit')
-#     parser.add_option("--cut-file", action="store_true",
-#         help='create a .GMT file with a cutline polygon')
-#     parser.add_option("-t", "--dest-dir", default=None, dest="dst_dir",
-#         help='destination directory (default: current)')
-#     parser.add_option("-n", "--after-name", action="store_true",
-#         help='give an output file name after a map name (from metadata)')
-#     parser.add_option("-m", "--after-map", action="store_true",
-#         help='give an output file name  after name of a map file, otherwise after a name of an image file')
-#     parser.add_option("-l", "--long-name", action="store_true",
-#         help='give an output file a long name')
-#     parser.add_option("-d", "--debug", action="store_true", dest="debug")
-#     parser.add_option("-q", "--quiet", action="store_true", dest="quiet")
-
-#    parser.add_option("--last-column-bug", action="store_true",
-#        help='some BSB files are missing value for last column, here is a workaround')
-#    parser.add_option("--broken-raster", action="store_true",
-#        help='try to workaround some BSB broken rasters (requires "convert" from ImageMagick)')
-
-
 if __name__ == '__main__':
     (options, args) = parse_args(sys.argv[1:])
 
     # ~ if not args:
     # ~ parser.error('No input file(s) specified')
 
-    logging.basicConfig(level=logging.DEBUG if options.debug else
-    (logging.ERROR if options.quiet else logging.INFO))
-
-    ld(os.name)
-    ld(options)
+    # logging.basicConfig(level=logging.DEBUG if options.debug else
+    # (logging.ERROR if options.quiet else logging.INFO))
+    #
+    # ld(os.name)
+    # ld(options)
 
     map(process_src, args)

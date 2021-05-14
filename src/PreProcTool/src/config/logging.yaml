@@ -1,0 +1,28 @@
+version: 1
+formatters:
+  withtime:
+    format: '%(asctime)s %(name)-25s %(levelname)-8s %(message)s'
+    datefmt: '%m/%d/%Y %I:%M:%S %p'
+  withouttime:
+    format: '%(name)-25s %(levelname)-8s %(message)s'
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: withouttime
+    stream: ext://sys.stdout
+  file_handler:
+    class: logging.FileHandler
+    level: DEBUG
+    formatter: withtime
+    filename: 'preproctool.log'
+#loggers:
+#  logger:
+#    level: DEBUG
+#    qualname: 'tilertools.gdal_tiler'
+#    handlers: [console, file_handler]
+#    propagate: no
+root:
+  level: DEBUG
+  handlers: [console, file_handler]
+

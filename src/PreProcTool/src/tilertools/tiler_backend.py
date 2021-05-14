@@ -26,11 +26,9 @@
 from __future__ import print_function
 import os
 import os.path
-import shutil
 import math
 import cgi
 from PIL import Image
-
 
 try:
     from osgeo import gdal
@@ -44,7 +42,10 @@ except ImportError:
     import ogr
 
 from tilertools.tiler_function import *
+import logging
+import app_settings
 
+logger = logging.getLogger(__name__)
 
 gcp_templ = '    <GCP Id="%s" Pixel="%r" Line="%r" X="%r" Y="%r" Z="%r"/>'
 
@@ -89,16 +90,10 @@ def base_resampling_lst():
     return base_resampling_map.keys()
 
 
-#############################
-
 class TilingScheme(object):
-
-    #############################
-    # ----------------------------
 
     def tile_path(self, tile):
         'relative path to a tile'
-        # ----------------------------
         z, x, y = tile
         return '%i/%i/%i%s' % (z, x, y, self.tile_ext)
 
@@ -114,22 +109,15 @@ class XYZtiling(TilingScheme):
 
 
 class ZYXtiling(XYZtiling):
-    # ----------------------------
 
     def tile_path(self, tile):
-        'relative path to a tile'
-        # ----------------------------
+        """relative path to a tile"""
         z, x, y = tile
         return 'z%i/%i/%i%s' % (z, y, x, self.tile_ext)
 
 
-#############################
-
 class BaseImg(object):
-    '''Tile feeder for a base zoom level'''
-
-    #############################
-
+    """Tile feeder for a base zoom level"""
     def __init__(self, dataset, world_ul, transparency=None):
         self.ds = dataset
         self.world_ul = world_ul
@@ -143,8 +131,7 @@ class BaseImg(object):
         del self.ds
 
     def get_tile(self, corners):
-        '''crop raster as per pair of world pixel coordinates'''
-
+        """crop raster as per pair of world pixel coordinates"""
         ul = [corners[0][i] - self.world_ul[i] for i in (0, 1)]
         sz = [corners[1][i] - corners[0][i] for i in (0, 1)]
 
@@ -177,17 +164,57 @@ class BaseImg(object):
         return img, opacity
 
 
-# BaseImg
+def xml_txt(name, value=None, indent=0, **attr_dict):
+    attr_txt = ''.join((' %s="%s"' % (key, attr_dict[key]) for key in attr_dict))
+    val_txt = ('>%s</%s' % (cgi.escape(value, quote=True), name)) if value else '/'
+    return '%s<%s%s%s>' % (' ' * indent, name, attr_txt, val_txt)
 
 
-#############################
+# ----------------------------
+#
+# templates for VRT XML
+#
+# ----------------------------
+
+warp_vrt = '''<VRTDataset rasterXSize="%(xsize)d" rasterYSize="%(ysize)d" subClass="VRTWarpedDataset">
+  <SRS>%(srs)s</SRS>
+%(geotr)s%(band_list)s
+  <BlockXSize>%(blxsize)d</BlockXSize>
+  <BlockYSize>%(blysize)d</BlockYSize>
+  <GDALWarpOptions>
+    <!-- <WarpMemoryLimit>6.71089e+07</WarpMemoryLimit> -->
+    <ResampleAlg>%(wo_ResampleAlg)s</ResampleAlg>
+    <WorkingDataType>Byte</WorkingDataType>
+    <SourceDataset relativeToVRT="0">%(wo_src_path)s</SourceDataset>
+%(warp_options)s
+    <Transformer>
+      <ApproxTransformer>
+        <MaxError>0.125</MaxError>
+        <BaseTransformer>
+          <GenImgProjTransformer>
+%(wo_src_transform)s
+%(wo_dst_transform)s
+            <ReprojectTransformer>
+              <ReprojectionTransformer>
+                <SourceSRS>%(wo_src_srs)s</SourceSRS>
+                <TargetSRS>%(wo_dst_srs)s</TargetSRS>
+              </ReprojectionTransformer>
+            </ReprojectTransformer>
+          </GenImgProjTransformer>
+        </BaseTransformer>
+      </ApproxTransformer>
+    </Transformer>
+    <BandList>
+%(wo_BandList)s
+    </BandList>
+%(wo_DstAlphaBand)s%(wo_Cutline)s  </GDALWarpOptions>
+</VRTDataset>
+'''
+
 
 class Pyramid(object):
-    '''Tile pyramid generator and utilities'''
-    #############################
-
+    """Tile pyramid generator and utilities"""
     zoom0_tiles = [1, 1]  # tiles at zoom 0, default value
-
     palette = None
     transparency = None
     zoom_range = None
@@ -195,17 +222,13 @@ class Pyramid(object):
     max_extent = None
     max_resolution = None
 
-    # ----------------------------
-
     def __init__(self, src=None, dest=None, options=None):
-
-        # ----------------------------
         gdal.UseExceptions()
 
         self.temp_files = []
         self.src = src
         self.dest = dest
-        ld('src dest', src, dest)
+        # ld('src dest', src, dest)
         self.options = LooseDict(options)
         if self.options.delete_src:
             self.temp_files.append(self.src)
@@ -215,11 +238,7 @@ class Pyramid(object):
 
         self.init_tile_grid()
 
-    # ----------------------------
-
     def __del__(self):
-
-        # ----------------------------
         try:
             if self.options.verbose < 2:
                 for f in self.temp_files:
@@ -227,19 +246,15 @@ class Pyramid(object):
         except:
             pass
 
-    # ----------------------------
-
     def init_tile_grid(self):
-        # init tile grid parameters
-        # ----------------------------
-
+        """init tile grid parameters"""
         self.proj_srs = txt2proj4(self.srs)  # self.proj_srs may be changed later to avoid crossing longitude 180
         self.geog_srs = proj_cs2geog_cs(self.proj_srs)
-        ld('proj, longlat', self.proj_srs, self.geog_srs)
+        # ld('proj, longlat', self.proj_srs, self.geog_srs)
 
         self.proj2geog = GdalTransformer(SRC_SRS=self.proj_srs, DST_SRS=self.geog_srs)
         max_x = self.proj2geog.transform_point((180, 0), inv=True)[0]  # Equator's half length
-        ld('max_x', max_x)
+        # ld('max_x', max_x)
 
         # pixel resolution at the zoom 0
         res0 = max_x * 2 / abs(self.zoom0_tiles[0] * self.tile_dim[0])
@@ -258,8 +273,8 @@ class Pyramid(object):
         self.tile_geo_origin = (to_lon, (max_lat if max_lat < to_lat else (-max_lat if -max_lat > to_lat else to_lat)))
         self.tile_origin = self.proj2geog.transform_point(self.tile_geo_origin, inv=True)
 
-        ld('zoom0_tiles', self.zoom0_tiles, 'tile_dim', self.tile_dim, 'pix_origin', self.pix_origin, 'tile_origin',
-           self.tile_origin, self.tile_geo_origin)
+        # ld('zoom0_tiles', self.zoom0_tiles, 'tile_dim', self.tile_dim, 'pix_origin', self.pix_origin, 'tile_origin',
+        # self.tile_origin, self.tile_geo_origin)
 
         # default map bounds to maximum limits (world map)
         ul = self.pix2coord(0, (0, 0))
@@ -269,14 +284,10 @@ class Pyramid(object):
                        (-ul[0], -ul[1]))  # lower right
 
         self.max_extent = (ul[0], lr[1], lr[0], ul[1])
-        ld('max extent', self.max_extent)
-
-    # ----------------------------
+        # ld('max extent', self.max_extent)
 
     def init_map(self, zoom_parm):
-        'initialize geo-parameters and generate base zoom level'
-        # ----------------------------
-
+        """initialize geo-parameters and generate base zoom level"""
         # init variables
         self.tiles_prefix = self.options.tiles_prefix
         self.src_dir, src_f = os.path.split(self.src)
@@ -308,7 +319,7 @@ class Pyramid(object):
             self.proj2geog = GdalTransformer(SRC_SRS=self.proj_srs, DST_SRS=self.geog_srs)
             self.pix_origin = (self.pix_origin[0] - shift_x, self.pix_origin[1])
             self.tile_origin = (self.tile_origin[0] - shift_x, self.tile_origin[1])
-            ld('new_srs', shifted_srs, 'shift_x', shift_x, 'pix_origin', self.pix_origin)
+            # ld('new_srs', shifted_srs, 'shift_x', shift_x, 'pix_origin', self.pix_origin)
 
         # get corners at the target SRS
         target_ds = gdal.AutoCreateWarpedVRT(self.src_ds, None, txt2wkt(shifted_srs))
@@ -322,26 +333,22 @@ class Pyramid(object):
                        (target_bounds[1][0],
                         max(self.bounds[1][1], target_bounds[1][1])))
 
-        ld('target raster')
-        ld('Upper Left', self.bounds[0], target_bounds[0], self.proj2geog.transform([self.bounds[0], target_bounds[0]]))
-        ld('Lower Right', self.bounds[1], target_bounds[1],
-           self.proj2geog.transform([self.bounds[1], target_bounds[1]]))
+        # ld('target raster')
+        # ld('Upper Left', self.bounds[0], target_bounds[0], self.proj2geog.transform([self.bounds[0], target_bounds[0]]))
+        # ld('Lower Right', self.bounds[1], target_bounds[1],
+        #    self.proj2geog.transform([self.bounds[1], target_bounds[1]]))
         #        orig_ul = GdalTransformer(SRC_SRS=self.geog_srs, DST_SRS=self.srs).transform_point(
         #            self.proj2geog.transform_point(target_bounds[0]))
         #        ld(orig_ul[0]-target_bounds[0][0], orig_ul)
         return True
 
-    # ----------------------------
-
     def get_src_ds(self):
-        'get src dataset, convert to RGB(A) if required'
-        # ----------------------------
-
+        """get src dataset, convert to RGB(A) if required"""
         self.src_path = self.src
         if os.path.exists(self.src):
             self.src_path = os.path.abspath(self.src)
             # pf('')
-            ld('self.src_path', self.src_path, self.src)
+            # ld('self.src_path', self.src_path, self.src)
 
         # check for source raster type
         src_ds = gdal.Open(self.src_path, GA_ReadOnly)
@@ -355,7 +362,8 @@ class Pyramid(object):
         src_proj = txt2proj4(src_ds.GetProjection())
         gcps = src_ds.GetGCPs()
         if gcps:
-            ld('src GCPsToGeoTransform', gdal.GCPsToGeoTransform(gcps))
+            pass
+            # ld('src GCPsToGeoTransform', gdal.GCPsToGeoTransform(gcps))
 
         if not src_proj and gcps:
             src_proj = txt2proj4(src_ds.GetGCPProjection())
@@ -364,7 +372,7 @@ class Pyramid(object):
         if override_srs is not None:
             src_proj = txt2proj4(override_srs)
 
-        ld('src_proj', src_proj, 'src geotr', src_geotr)
+        # ld('src_proj', src_proj, 'src geotr', src_geotr)
         assert src_proj, 'The source does not have a spatial reference system assigned'
 
         src_bands = src_ds.RasterCount
@@ -390,7 +398,7 @@ class Pyramid(object):
             if transparency is not None:  # render in paletted mode
                 self.transparency = transparency
                 self.palette = pil_palette
-                ld('self.palette', self.palette)
+                # ld('self.palette', self.palette)
 
             else:  # convert src to rgb VRT
                 if not src_geotr or src_geotr == (0.0, 1.0, 0.0, 0.0, 0.0, 1.0):
@@ -406,7 +414,7 @@ class Pyramid(object):
                     gcplst_txt = gcplst_templ % (gcp_proj, gcp_lst)
 
                 metadata = src_ds.GetMetadata()
-                ld('metadata', metadata)
+                # ld('metadata', metadata)
                 if metadata:
                     mtd_lst = [xml_txt('MDI', metadata[mdkey], 4, key=mdkey) for mdkey in metadata]
                     meta_txt = meta_templ % '\n'.join(mtd_lst)
@@ -455,7 +463,7 @@ class Pyramid(object):
             vrt_drv = gdal.GetDriverByName('VRT')
             self.src_ds = vrt_drv.CreateCopy(src_vrt, src_ds)  # replace src dataset
 
-            ld('override_srs', override_srs, 'txt2wkt(override_srs)', txt2wkt(override_srs))
+            # ld('override_srs', override_srs, 'txt2wkt(override_srs)', txt2wkt(override_srs))
             self.src_ds.SetProjection(txt2wkt(override_srs))  # replace source SRS
             gcps = self.src_ds.GetGCPs()
             if gcps:
@@ -470,15 +478,12 @@ class Pyramid(object):
     #        ld('Upper Left', src_origin, src_proj2geog.transform([src_origin]))
     #        ld('Lower Right', src_extent, src_proj2geog.transform([src_extent]))
 
-    # ----------------------------
-
     def shift_srs(self, zoom=None):
-        'change prime meridian to allow charts crossing 180 meridian'
-        # ----------------------------
+        """change prime meridian to allow charts crossing 180 meridian"""
         ul, lr = GdalTransformer(self.src_ds, DST_SRS=self.geog_srs).transform([
             (0, 0),
             (self.src_ds.RasterXSize, self.src_ds.RasterYSize)])
-        ld('shift_srs ul', ul, 'lr', lr)
+        # ld('shift_srs ul', ul, 'lr', lr)
         if lr[0] <= 180 and ul[0] >= -180 and ul[0] < lr[0]:
             return self.proj_srs
 
@@ -488,20 +493,16 @@ class Pyramid(object):
             tile_left_xy = self.tile_bounds(self.coord2tile(zoom, left_xy))[0]
             left_lon = self.proj2geog.transform_point(tile_left_xy)[0]
         lon_0 = left_lon + 180
-        ld('left_lon', left_lon, 'lon_0', lon_0)
+        # ld('left_lon', left_lon, 'lon_0', lon_0)
         new_srs = '%s +lon_0=%f' % (self.proj_srs, lon_0)
         if not (lr[0] <= 180 and ul[0] >= -180):
             new_srs += ' +over +wktext'  # allow for a map to span beyond -180 -- +180 range
         return new_srs
 
-    # ----------------------------
-
     def calc_zoom(self, zoom_parm):
-        'determine and set a list of zoom levels to generate'
-        # ----------------------------
-
+        """determine and set a list of zoom levels to generate"""
         # check raster parameters to find default zoom range
-        ld('automatic zoom levels')
+        # ld('automatic zoom levels')
 
         # modify target srs to allow charts crossing meridian 180
         shifted_srs = self.shift_srs()
@@ -515,22 +516,17 @@ class Pyramid(object):
         ul_c = (geotr[0], geotr[3])
         lr_c = gdal.ApplyGeoTransform(geotr, t_ds.RasterXSize, t_ds.RasterYSize)
         wh = (lr_c[0] - ul_c[0], ul_c[1] - lr_c[1])
-        ld('ul_c, lr_c, wh', ul_c, lr_c, wh)
+        # ld('ul_c, lr_c, wh', ul_c, lr_c, wh)
         min_zoom = min(self.res2zoom_xy([wh[i] / abs(self.tile_dim[i]) for i in (0, 1)]))
 
         self.set_zoom_range(zoom_parm, (min_zoom, max_zoom))
 
-    # ----------------------------
-
     def make_raster(self, zoom):
-
-        # ----------------------------
-        logTilerBackend = logging.getLogger('tilerbackend.make_raster')
         try:
             # adjust raster extents to tile boundaries
             tile_ul, tile_lr = self.corner_tiles(zoom)
-            ld('base_raster')
-            ld('tile_ul', tile_ul, 'tile_lr', tile_lr)
+            # ld('base_raster')
+            # ld('tile_ul', tile_ul, 'tile_lr', tile_lr)
             ul_c = self.tile_bounds(tile_ul)[0]
             lr_c = self.tile_bounds(tile_lr)[1]
             ul_pix = self.tile_pixbounds(tile_ul)[0]
@@ -540,8 +536,8 @@ class Pyramid(object):
             dst_xsize = lr_pix[0] - ul_pix[0]
             dst_ysize = lr_pix[1] - ul_pix[1]
 
-            ld('target Upper Left', self.bounds[0], ul_c, self.proj2geog.transform([self.bounds[0], ul_c]))
-            ld('target Lower Right', self.bounds[1], lr_c, self.proj2geog.transform([self.bounds[1], lr_c]))
+            # ld('target Upper Left', self.bounds[0], ul_c, self.proj2geog.transform([self.bounds[0], ul_c]))
+            # ld('target Lower Right', self.bounds[1], lr_c, self.proj2geog.transform([self.bounds[1], lr_c]))
 
             # create VRT for base image warp
 
@@ -561,7 +557,7 @@ class Pyramid(object):
                 assert gcps, 'Neither geotransform, nor gpcs are in the source file %s' % self.src
 
                 gcp_lst = [(g.Id, g.GCPPixel, g.GCPLine, g.GCPX, g.GCPY, g.GCPZ) for g in gcps]
-                ld('src_proj', self.src_ds.GetProjection(), 'gcp_proj', self.src_ds.GetGCPProjection())
+                # ld('src_proj', self.src_ds.GetProjection(), 'gcp_proj', self.src_ds.GetGCPProjection())
                 gcp_proj = txt2proj4(self.src_ds.GetGCPProjection())
                 if src_proj and gcp_proj != src_proj:
                     coords = GdalTransformer(SRC_SRS=gcp_proj, DST_SRS=src_proj).transform([g[3:6] for g in gcp_lst])
@@ -573,8 +569,8 @@ class Pyramid(object):
 
             res = self.zoom2res(zoom)
             # ul_ll, lr_ll = self.coords2longlat([ul_c, lr_c])
-            ld('max_zoom', zoom, 'size', dst_xsize, dst_ysize, '-tr', res[0], res[1], '-te', ul_c[0], lr_c[1], lr_c[0],
-               ul_c[1], '-t_srs', self.proj_srs)
+            # ld('max_zoom', zoom, 'size', dst_xsize, dst_ysize, '-tr', res[0], res[1], '-te', ul_c[0], lr_c[1], lr_c[0],
+            #    ul_c[1], '-t_srs', self.proj_srs)
             dst_geotr = (ul_c[0], res[0], 0.0,
                          ul_c[1], 0.0, res[1])
             # ok, dst_igeotr = gdal.InvGeoTransform(dst_geotr)
@@ -602,7 +598,7 @@ class Pyramid(object):
                     warp_options.append(w_option('CUTLINE_BLEND_DIST', self.options.blend_dist))
 
             src_bands = self.src_ds.RasterCount
-            ld('src_bands', src_bands)
+            # ld('src_bands', src_bands)
 
             # process nodata info
             src_nodata = None
@@ -614,7 +610,7 @@ class Pyramid(object):
             dst_nodata = None
             if self.palette is not None:
                 dst_nodata = [self.transparency]
-            ld('nodata', src_nodata, dst_nodata)
+            # ld('nodata', src_nodata, dst_nodata)
 
             # src raster bands mapping
             vrt_bands = []
@@ -649,7 +645,7 @@ class Pyramid(object):
                 'wo_dst_transform': dst_transform,
                 'wo_BandList': '\n'.join(wo_BandList),
                 'wo_DstAlphaBand': warp_dst_alpha_band % (
-                            src_bands + 1) if src_bands < 4 and self.palette is None else '',
+                        src_bands + 1) if src_bands < 4 and self.palette is None else '',
                 'wo_Cutline': (warp_cutline % cut_wkt) if cut_wkt else '',
             }
 
@@ -667,22 +663,13 @@ class Pyramid(object):
 
             # create base_image raster
             self.base_img = BaseImg(base_ds, ul_pix, self.transparency)
+
         except Exception as e:
-            logTilerBackend.error('{}'.format(e))
-
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            logTilerBackend.debug('{}::{}::{}'.format(exc_type, fname, exc_tb.tb_lineno))
-
-            sys.exit()
-
-            # ----------------------------
+            app_settings.error_log(logger, e)
 
     def get_cutline(self):
-
-        # ----------------------------
         cutline = self.src_ds.GetMetadataItem('CUTLINE')
-        ld('cutline', cutline)
+        # ld('cutline', cutline)
         if cutline and not self.options.cutline:
             return cutline
 
@@ -700,12 +687,8 @@ class Pyramid(object):
         feature_name = self.base if self.options.cutline_match_name else None
         return shape2cutline(cut_file, self.src_ds, feature_name)
 
-    # ----------------------------
-
     def walk_pyramid(self):
-        'generate pyramid'
-        # ----------------------------
-        logTilerBackend = logging.getLogger('tilerbackend.walk_pyramid')
+        """generate pyramid"""
         try:
             if not self.init_map(self.options.zoom):
                 return
@@ -717,7 +700,7 @@ class Pyramid(object):
                 self.name = os.path.basename(self.dest)
 
             # map 'logical' tiles to 'physical' tiles
-            ld('walk')
+            # ld('walk')
             self.tile_map = {}
             for zoom in self.zoom_range:
                 tile_ul, tile_lr = self.corner_tiles(zoom)
@@ -734,7 +717,7 @@ class Pyramid(object):
                 self.tile_map.update(zoom_tiles_map)
 
             self.all_tiles = frozenset(self.tile_map)  # store all tiles into a set
-            ld('min_zoom', zoom, 'tile_ul', tile_ul, 'tile_lr', tile_lr, 'tiles', zoom_tiles_map)
+            # ld('min_zoom', zoom, 'tile_ul', tile_ul, 'tile_lr', tile_lr, 'tiles', zoom_tiles_map)
 
             # top level tiles are in zoom_tiles_map now
             top_results = list(filter(None, list(map(self.proc_tile, zoom_tiles_map.keys()))))
@@ -754,20 +737,9 @@ class Pyramid(object):
 
             # write_transparency(self.dest, transparency)
         except Exception as e:
-            logTilerBackend.error('{}'.format(e))
-
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            logTilerBackend.debug('{}::{}::{}'.format(exc_type, fname, exc_tb.tb_lineno))
-
-            sys.exit()
-
-            # ----------------------------
+            app_settings.error_log(logger, e)
 
     def proc_tile(self, tile):
-
-        # ----------------------------
-
         ch_opacities = []
         ch_results = []
         zoom, x, y = tile
@@ -873,11 +845,7 @@ class Pyramid(object):
             self.write_metadata(tile, [ch for img, ch, opacities in ch_results])
             return tile_img, tile, [(tile, opacity)] + ch_opacities
 
-    # ----------------------------
-
     def write_tile(self, tile, tile_img):
-
-        # ----------------------------
         rel_path = self.tile_path(tile)
         full_path = os.path.join(self.dest, rel_path)
         try:
@@ -907,34 +875,23 @@ class Pyramid(object):
 
         # self.counter()
 
-    # ----------------------------
-
     def map_tiles2longlat_bounds(self, tiles):
-        'translate "logical" tiles to latlong boxes'
-        # ----------------------------
+        """translate "logical" tiles to latlong boxes"""
         # via 'logical' to 'physical' tile mapping
         return self.bounds_lst2longlat([self.tile_bounds(self.tile_map[t]) for t in tiles])
 
-    # ----------------------------
-
     def write_metadata(self, tile=None, children=[]):
-
-        # ----------------------------
         if tile == None:
             self.write_tilemap()
             copy_viewer(self.dest)
 
-    # ----------------------------
-
     def write_tilemap(self):
-        '''Generate JSON for a tileset description'''
-        # ----------------------------
-
+        """Generate JSON for a tileset description"""
         # reproject extents back to the unshifted SRS
         bbox = GdalTransformer(SRC_SRS=self.proj_srs, DST_SRS=self.srs).transform(self.bounds)
         # get back unshifted tile origin
         un_tile_origin = GdalTransformer(SRC_SRS=self.geog_srs, DST_SRS=self.srs).transform_point(self.tile_geo_origin)
-        ld('un_tile_origin', un_tile_origin, self.tile_geo_origin, self.geog_srs, self.srs)
+        # ld('un_tile_origin', un_tile_origin, self.tile_geo_origin, self.geog_srs, self.srs)
 
         tile_mime = mime_from_ext(self.tile_ext)
         tilemap = {
@@ -970,7 +927,7 @@ class Pyramid(object):
         }
 
         write_tilemap(self.dest, tilemap)
-        ld(tilemap)
+        # ld(tilemap)
 
     # ----------------------------
     #
@@ -1071,8 +1028,7 @@ class Pyramid(object):
         return t_ul, t_lr
 
     def set_zoom_range(self, zoom_parm, defaults=(0, 22)):
-        'set a list of zoom levels from a parameter list'
-
+        """set a list of zoom levels from a parameter list"""
         if not zoom_parm:
             zoom_parm = '%d:%d' % defaults
 
@@ -1099,7 +1055,7 @@ class Pyramid(object):
                 zlist += range(min(zrange), max(zrange) + 1)
 
         self.zoom_range = list(reversed(sorted(set(zlist))))
-        ld('zoom_range', self.zoom_range, defaults)
+        # ld('zoom_range', self.zoom_range, defaults)
 
     def in_range(self, ul_tile, lr_tile=None):
         if not ul_tile:
@@ -1158,54 +1114,6 @@ class Pyramid(object):
             return False
 
 
-# Pyramid
-
-# ----------------------------
-#
-# templates for VRT XML
-#
-# ----------------------------
-
-def xml_txt(name, value=None, indent=0, **attr_dict):
-    attr_txt = ''.join((' %s="%s"' % (key, attr_dict[key]) for key in attr_dict))
-    val_txt = ('>%s</%s' % (cgi.escape(value, quote=True), name)) if value else '/'
-    return '%s<%s%s%s>' % (' ' * indent, name, attr_txt, val_txt)
-
-
-warp_vrt = '''<VRTDataset rasterXSize="%(xsize)d" rasterYSize="%(ysize)d" subClass="VRTWarpedDataset">
-  <SRS>%(srs)s</SRS>
-%(geotr)s%(band_list)s
-  <BlockXSize>%(blxsize)d</BlockXSize>
-  <BlockYSize>%(blysize)d</BlockYSize>
-  <GDALWarpOptions>
-    <!-- <WarpMemoryLimit>6.71089e+07</WarpMemoryLimit> -->
-    <ResampleAlg>%(wo_ResampleAlg)s</ResampleAlg>
-    <WorkingDataType>Byte</WorkingDataType>
-    <SourceDataset relativeToVRT="0">%(wo_src_path)s</SourceDataset>
-%(warp_options)s
-    <Transformer>
-      <ApproxTransformer>
-        <MaxError>0.125</MaxError>
-        <BaseTransformer>
-          <GenImgProjTransformer>
-%(wo_src_transform)s
-%(wo_dst_transform)s
-            <ReprojectTransformer>
-              <ReprojectionTransformer>
-                <SourceSRS>%(wo_src_srs)s</SourceSRS>
-                <TargetSRS>%(wo_dst_srs)s</TargetSRS>
-              </ReprojectionTransformer>
-            </ReprojectTransformer>
-          </GenImgProjTransformer>
-        </BaseTransformer>
-      </ApproxTransformer>
-    </Transformer>
-    <BandList>
-%(wo_BandList)s
-    </BandList>
-%(wo_DstAlphaBand)s%(wo_Cutline)s  </GDALWarpOptions>
-</VRTDataset>
-'''
 warp_band = '  <VRTRasterBand dataType="Byte" band="%d" subClass="VRTWarpedRasterBand"%s>'
 warp_band_color = '>\n    <ColorInterp>%s</ColorInterp>\n  </VRTRasterBand'
 warp_dst_alpha_band = '    <DstAlphaBand>%d</DstAlphaBand>\n'
