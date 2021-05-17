@@ -20,6 +20,9 @@ import app_settings
 # Set PreProcTool log file before the LANDVIZ module imports.
 # It enables to use ```logger = logging.getLogger(__name__)```
 # for each module.
+# FIXME Don't create log file when sys.argv[:1] has no argument or '-h'
+# The problem is LANDIS modules needs to be imported after logging
+# file is created.  Otherwise, the logging doesn't work.
 appPath = app_settings.get_app_path()
 appFile = app_settings.get_app_file()
 logFile = os.path.join(appPath, 'logs', 'proproctool.log')
@@ -118,65 +121,72 @@ def parseArguemnts(argv):
     parserTimeSteps.add_argument("-g", "--groupby", dest="group_by_column", required=False, type=str, default='',
                                  help="Group by column name")
 
-    return parser.parse_args(argv)
+    return (parser.parse_args(argv), parser)
 
 
 def main(argv):
     logMain = logging.getLogger('landis.main')
+    # print(logging.getLogger().manager.loggerDict.keys())
     try:
         # parse commandline arguments
-        args = parseArguemnts(argv)
-        logMain.info('Start LANDIS-II PreProcTool')
-        start = time.time()
-        # Timestamp log file name
-        logCopyDest = os.path.join(appPath, 'logs', f'{time.strftime("%Y%m%d-%H%M%S")}.log')
+        args, parser = parseArguemnts(argv)
+        if args.command != None:
+            logMain.info('Start LANDIS-II PreProcTool')
+            start = time.time()
+            # Timestamp log file name
+            logCopyDest = os.path.join(appPath, 'logs', f'{time.strftime("%Y%m%d-%H%M%S")}.log')
 
-        confYamlPath = 'config\\config.yaml'
-        if args.command == 'merge':
-            preprocess = PreProcess(appPath, confYamlPath, args)
-            preprocess.mergeXMLs()
+            confYamlPath = 'config\\config.yaml'
+            if args.command == 'merge':
+                preprocess = PreProcess(appPath, confYamlPath, args)
+                preprocess.mergeXMLs()
 
-        elif args.command == 'update':
-            preprocess = PreProcess(appPath, confYamlPath, args)
-            preprocess.updateXMLs()
+            elif args.command == 'update':
+                preprocess = PreProcess(appPath, confYamlPath, args)
+                preprocess.updateXMLs()
 
-        elif args.command == 'timesteps':
-            timesteps = ExtensionLog(args)
-            timesteps.checkTimeSteps()
+            elif args.command == 'timesteps':
+                timesteps = ExtensionLog(args)
+                timesteps.checkTimeSteps()
 
-        elif args.command == 'preproc':
-            # LANDIS PreProc Collector: collects Project Configuration and Project Data
-            collector = Collector()
+            elif args.command == 'preproc':
+                # LANDIS PreProc Collector: collects Project Configuration and Project Data
+                collector = Collector()
 
-            # CONFIG Object has different Configurations
-            CONFIG = collector.setupConfig(appPath, appFile, confYamlPath, args)
-            # PROJECT stores the complete Project (Infos aboute the Project/Scenarios/Extensions/Outputs)
-            PROJECT = collector.setupProject()
+                # CONFIG Object has different Configurations
+                CONFIG = collector.setupConfig(appPath, appFile, confYamlPath, args)
+                # PROJECT stores the complete Project (Infos aboute the Project/Scenarios/Extensions/Outputs)
+                PROJECT = collector.setupProject()
 
-            # LANDIS Preworker: prepare Tables and Maps
-            preworker = PreWorker(PROJECT, CONFIG)
+                # LANDIS Preworker: prepare Tables and Maps
+                preworker = PreWorker(PROJECT, CONFIG)
 
-            outputworker = OutputWorker(PROJECT, CONFIG)
-            outputworker.generateOutputDirs()
+                outputworker = OutputWorker(PROJECT, CONFIG)
+                outputworker.generateOutputDirs()
 
-            preworker.prepairTables()
-            preworker.prepairMaps()
+                preworker.prepairTables()
+                preworker.prepairMaps()
 
-            outputworker.saveMetadataJson()
-            outputworker.copyWebbase()
-            outputworker.updateWebsettings()
+                outputworker.saveMetadataJson()
+                outputworker.copyWebbase()
+                outputworker.updateWebsettings()
 
-            outputworker.zipOutputDir()
-        end = time.time()
-        elapsed = str(timedelta(seconds=end - start))
-        logMain.info(f'Processing time: {elapsed}')
-        logMain.info('End of LANDIS-II PreProcTool')
-        logging.shutdown()
-        os.rename(logFile, logCopyDest)
+                outputworker.zipOutputDir()
+            end = time.time()
+            elapsed = str(timedelta(seconds=end - start))
+            logMain.info(f'Processing time: {elapsed}')
+            logMain.info('End of LANDIS-II PreProcTool')
+            logging.shutdown()
+            os.rename(logFile, logCopyDest)
+        else:
+            logging.shutdown()
+            parser.print_help()
 
-    except SystemExit:  # argparse -h
+    except SystemExit:
+        logging.shutdown()# argparse -h
         sys.exit(0)
     except Exception as err:
+        logging.shutdown()
         app_settings.error_log(logMain, err)
         logMain.info('Failed to run LANDIS-II PreProcTool')
 

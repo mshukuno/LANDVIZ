@@ -66,6 +66,7 @@ def setup_logger(log_file_name):
         config = yaml.load(stream, Loader=yaml.FullLoader)
     config['handlers']['file_handler']['filename'] = logs_file
     logging.config.dictConfig(config)
+    # logging.config.dictConfig({'version': 1, 'disable_existing_loggers': False})
 
 
 def error_log(logger, err):
