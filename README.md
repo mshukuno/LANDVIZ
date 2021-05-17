@@ -18,8 +18,7 @@ WebWisTool: Development environment for the WebVisTool
 
 ##### merge & update
 _When to use?_ </br>
-If you have multiple extensions and need to modify multiple extension metadata 
-for the LANDVIZ tool.
+Multiple extension metadata need to be modified for the LANDVIZ tool.
 ###### merge
 The tool merges the LANDIS-II Extensions' metadata into one XML file. It makes easy
 to edit multiple extensions' metadata on one file.</br>
@@ -62,21 +61,17 @@ Use without ```-g``` flag.
 </br>
 </br>
 #### Updates
-* Update Python 3.7 from Python 2.7
-* Enable the LandViz pre-processing tool (PreProcTool) to handle cases when maps are missing or are present but empty (these currently cause PreProcTool to crash).
+* Updated to Python 3.7 from Python 2.7
+* Enabled the LandViz pre-processing tool (PreProcTool) to handle cases when maps are missing or are present but empty (these currently cause PreProcTool to crash).
     * If data is empty (all 0’s or none) - not creating map tiles.
     * If data does not exist - not creating map tiles.
-* When output maps or logs are inconsistent in output frequency 
-  (some disturbances), ensure that missing time steps are represented properly (empty/0 values) in both maps and charts.
-    * Partial fix - this should be handled by the LANDIS-II Extensions since log files are unique to extensions. The updates 
-    include supplemental tool ```timesteps``` for the extension CSV log (e.g. Base BDA) file.
-* New User Editing Capacity
-    * Allow the ‘user’ (the individual creating websites) to pick and choose 
-      which outputs to include in visualization from outputs produced by LANDIS-II 
-      that are encoded by the metadata library (```merge``` and ```update```).
-* Update the tool logging
-    * Includes tilertools logging.
-* Update jQuery library from 2.x to 3.5 in LANDVIZ Web.
+* Added ```merge``` and ```update``` tools for metadata edit.
+* Added log for missing map time steps.
+* Added ```timesteps``` tool to add missing time steps for Base BDA, and 
+  a simple CSV extension log file having all numeric attributes.
+* Updated the tool logging
+    * Includes log for the tilerstool.
+* Updated jQuery library from 2.x to 3.5 in LANDVIZ Web.
 
 
 ## LANDVIZ v1.2
