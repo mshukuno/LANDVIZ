@@ -42,6 +42,7 @@ having all numeric attributes.
 | -ts_min | Minimum time step |
 | -ts_max | Maximum time step |
 | -g    | Group by column name |
+
 Base BDA:</br>
 Group by "AgentName" and adds skipped time steps and add rest of attributes
 to be 0s.
