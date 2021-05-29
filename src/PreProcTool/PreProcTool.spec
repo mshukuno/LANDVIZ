@@ -19,7 +19,7 @@ pyz = PYZ(a.pure, a.zipped_data,
 exe = EXE(pyz,
           a.scripts,
           exclude_binaries=True,
-	  name='PreProcTool',
+	  name='PreProcTool-v2',
 	  debug=False,
 	  strip=False,
 	  upx=True,
@@ -30,7 +30,7 @@ coll = COLLECT(exe,
                a.datas,
                strip=False,
                upx=True,
-               name='PreProcTool')
+               name='PreProcTool-v2')
           
           
           

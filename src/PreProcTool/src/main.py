@@ -29,7 +29,7 @@ logFile = os.path.join(appPath, 'logs', 'proproctool.log')
 app_settings.setup_logger(logFile)
 
 # Set osgeo PROJ_LIB environment variable
-app_settings.set_env_proj_lib()
+# app_settings.set_env_proj_lib()
 
 # LANDVIZ modules
 from multiprocessing import freeze_support
@@ -123,13 +123,14 @@ def parseArguemnts(argv):
 
     return (parser.parse_args(argv), parser)
 
-
 def main(argv):
     logMain = logging.getLogger('landis.main')
+    logMain.info(f'PROJ_LIB: {os.environ["PROJ_LIB"]}')
     # print(logging.getLogger().manager.loggerDict.keys())
     try:
         # parse commandline arguments
         args, parser = parseArguemnts(argv)
+
         if args.command != None:
             logMain.info('Start LANDIS-II PreProcTool')
             start = time.time()

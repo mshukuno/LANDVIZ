@@ -10,6 +10,6 @@ echo ==============================
 echo build Proj4Extent
 echo ==============================
 echo run pyinstaller...
-pyinstaller --onefile --workpath=build -y --clean --name=Proj4Extent --distpath=dist\PreProcTool src\Proj4Extent.py %*
+pyinstaller --onefile --workpath=build -y --clean --name=Proj4Extent --distpath=dist\PreProcTool-v2 src\Proj4Extent.py %*
 echo ==============================
 pause

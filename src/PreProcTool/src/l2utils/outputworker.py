@@ -27,7 +27,7 @@ class OutputWorker(object):
 
             excEnv = os.path.basename(sys.executable)
 
-            if excEnv == 'PreProcTool.exe':
+            if excEnv == 'PreProcTool-v2.exe':
                 distutils.dir_util.copy_tree(
                     self.CONFIG['APPLICATION']['PATH'] + "\webbase", self.CONFIG['PROJECT']['OUTPUT_DIR'])
                 Weblinks(self.CONFIG['PROJECT']['INPUT_XML'],

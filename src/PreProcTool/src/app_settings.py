@@ -7,7 +7,7 @@ import yaml
 def module_path():
     if getattr(sys, 'frozen', False):
         return sys._MEIPASS
-    return os.path.dirname(os.path.abspath(__file__))
+    return os.path.dirname(sys.argv[0])
 
 
 def resource_path(relativePath):
@@ -46,7 +46,7 @@ def set_env_proj_lib():
             pass
 
     except KeyError:
-        os.environ['PROJ_LIB'] = os.path.join(os.path.dirname(sys.argv[0]), 'proj')
+        os.environ['PROJ_LIB'] = os.path.join(get_app_path(), 'proj')
 
 
 def setup_logger(log_file_name):
