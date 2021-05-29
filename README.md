@@ -13,7 +13,7 @@ WebWisTool: Development environment for the WebVisTool
 
 <br></br>
 <br></br>
-## LANDVIZ v?.?
+## LANDVIZ v2.0
 #### Edit extension metadata (_optional_)
 
 ##### merge & update
@@ -22,11 +22,11 @@ Multiple extension metadata need to be modified for the LANDVIZ tool.
 ###### merge
 The tool merges the LANDIS-II Extensions' metadata into one XML file. It makes easy
 to edit multiple extensions' metadata on one file.</br>
-```preproctool merge -p {project XML file path} -f {output XML file name}```
+```preproctool-v2 merge -p {project XML file path} -f {output XML file name}```
 ###### update
 The tool updates metadata according to changes made on
 the merged XML file.</br>
-```preproctool update -p {project XML file path} -f {merged XML file name}```  
+```preproctool-v2 update -p {project XML file path} -f {merged XML file name}```  
 ##### timesteps
 The tool adds skipped time steps for CSV log file. Currently, only two types 
 of CSV log files are supported - Base BDA and a simple CSV extension log file
@@ -47,7 +47,7 @@ Group by "AgentName" and adds skipped time steps and add rest of attributes
 to be 0s.
 
 ```
-preproctool timesteps 
+preproctool-v2 timesteps 
 -i "path to\bda-log.csv" 
 -f "bda-log.csv"
 -ts_c "Time"
@@ -60,6 +60,7 @@ Simple CSV log (all attributes are numeric)
 Use without ```-g``` flag.
 </br>
 </br>
+
 #### Updates
 * Updated to Python 3.7 from Python 2.7
 * Enabled the LandViz pre-processing tool (PreProcTool) to handle cases when maps are missing or are present but empty (these currently cause PreProcTool to crash).
@@ -72,6 +73,7 @@ Use without ```-g``` flag.
 * Updated the tool logging
     * Includes log for the tilerstool.
 * Updated jQuery library from 2.x to 3.5 in LANDVIZ Web.
+* Changed the tool name to PreProcTool-v2 from PreProcTool.
 
 
 ## LANDVIZ v1.2
