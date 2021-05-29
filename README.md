@@ -75,6 +75,10 @@ Use without ```-g``` flag.
 * Updated jQuery library from 2.x to 3.5 in LANDVIZ Web.
 * Changed the tool name to PreProcTool-v2 from PreProcTool.
 
+#### Uninstall
+The installer install application in ```C:\Program Files\LANDIS-II-v7\LANDVIZ-v2``` and adds system Path environment variable.
+To uninstall, double click ```unins000.exe```. It will remove the application and environment variable.  The files and 
+folders created after the installation such as logs folder and log files will not be removed by uninstaller.
 
 ## LANDVIZ v1.2
 
