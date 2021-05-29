@@ -79,6 +79,8 @@ Use without ```-g``` flag.
 The installer install application in ```C:\Program Files\LANDIS-II-v7\LANDVIZ-v2``` and adds system Path environment variable.
 To uninstall, double click ```unins000.exe```. It will remove the application and environment variable.  The files and 
 folders created after the installation such as logs folder and log files will not be removed by uninstaller.
+</br>
+</br>
 
 ## LANDVIZ v1.2
 
