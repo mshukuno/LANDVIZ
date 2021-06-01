@@ -60,6 +60,16 @@ Simple CSV log (all attributes are numeric) -
 Use without ```-g``` flag.
 </br>
 </br>
+##### Modifying LANDVIZ-II Extensions CSV log format for Python developer:
+Find Python file in ```src/PreProcTool/extensionlog/extensionlog.py```.
+</br>
+</br>
+
+
+#### Uninstall
+The installer install application in ```C:\Program Files\LANDIS-II-v7\LANDVIZ-v2``` and adds system Path environment variable.
+To uninstall, double click ```unins000.exe```. It will remove the application and environment variable.  The files and 
+folders created after the installation such as logs folder and log files will not be removed by uninstaller.
 
 #### Updates
 * Updated to Python 3.7 from Python 2.7
@@ -74,11 +84,6 @@ Use without ```-g``` flag.
     * Includes log for the tilerstool.
 * Updated jQuery library from 2.x to 3.5 in LANDVIZ Web.
 * Changed the tool name to PreProcTool-v2 from PreProcTool.
-
-#### Uninstall
-The installer install application in ```C:\Program Files\LANDIS-II-v7\LANDVIZ-v2``` and adds system Path environment variable.
-To uninstall, double click ```unins000.exe```. It will remove the application and environment variable.  The files and 
-folders created after the installation such as logs folder and log files will not be removed by uninstaller.
 </br>
 </br>
 
