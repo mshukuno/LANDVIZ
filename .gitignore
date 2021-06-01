@@ -1,0 +1,30 @@
+###############
+# PreProcTool #
+###############
+/example/*
+src/PreProcTool/build
+src/PreProcTool/Proj4Extent.spec
+src/PreProcTool/src/logs
+src/PreProcTool/example
+
+###############
+# WebVizTool #
+###############
+src/WebVizTool/localenv/start-landis-vis-local.spec
+
+###########
+# Testings #
+###########
+
+/test/*
+__pycache__/
+/.idea/*
+*.pyc
+.vscode
+.*
+
+/.project
+/.pydevproject
+
+/.gitignore
+/.gitattributes
