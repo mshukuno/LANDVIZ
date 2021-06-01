@@ -28,8 +28,8 @@ The tool updates metadata according to changes made on
 the merged XML file.</br>
 ```preproctool-v2 update -p {project XML file path} -f {merged XML file name}```  
 ##### timesteps
-The tool adds skipped time steps for CSV log file. Currently, only two types 
-of CSV log files are supported - Base BDA and a simple CSV extension log file
+The tool adds skipped time steps for the LANDIS-II Extensions CSV log file. Currently, only two types 
+of CSV log files are supported - Base BDA and, a simple CSV extension log file
 having all numeric attributes.
 
 | Flags | Descriptions |
@@ -49,14 +49,14 @@ to be 0s.
 ```
 preproctool-v2 timesteps 
 -i "path to\bda-log.csv" 
--f "bda-log.csv"
+-f "bda-log_v2.csv"
 -ts_c "Time"
 -ts_i 1
 -ts_min 0
 -ts_max 114
 -g "AgentName"
 ```
-Simple CSV log (all attributes are numeric)
+Simple CSV log (all attributes are numeric) - 
 Use without ```-g``` flag.
 </br>
 </br>
