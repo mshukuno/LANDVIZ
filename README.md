@@ -63,7 +63,6 @@ Use without ```-g``` flag.
 ##### Modifying LANDVIZ-II Extensions CSV log format for Python developer:
 Find Python file in ```src/PreProcTool/extensionlog/extensionlog.py```.
 </br>
-</br>
 
 
 #### Uninstall
